@@ -1,3 +1,5 @@
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdbool.h>
@@ -126,23 +128,4 @@ llsnode_t *lls_delete_first(llsnode_t *head)
 	free(head);
 	return tmp;
 }
-
-int main(void) 
-{
-    llsnode_t *node = lls_new(0);
-    lls_insert(node, 1);
-    lls_insert(node, 2);
-    lls_insert(node, 3);
-    lls_insert(node, 4);
-    lls_insert(node, 5);
-    lls_insert(node, 6);
-    lls_insert(node, 7);
-    lls_insert(node, 8);
-    lls_insert(node, 9);
-
-	lls_print(node);
-	node = lls_delete_first(node);
-	lls_print(node);
-    
-    return 0;
-}
+#endif
