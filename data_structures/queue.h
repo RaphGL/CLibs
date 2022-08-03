@@ -1,3 +1,5 @@
+#ifndef QUEUE_H
+#define QUEUE_H
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -63,3 +65,4 @@
             return val;                                      \
         }                                                    \
     }
+#endif
