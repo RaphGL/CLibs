@@ -1,7 +1,6 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 #include <stdlib.h>
-#include <stdio.h>
 
 #define QUEUE_INIT(T)                                        \
     typedef struct queue_node_##T                            \
@@ -65,17 +64,6 @@
         q->head = NULL;                                      \
         q->size--;                                           \
         return val;                                          \
-    }                                                        \
-                                                             \
-    int queue_size_##T(Queue_##T *q)                         \
-    {                                                        \
-        QueueNode_##T *tmp = q->head;                        \
-        int size = 0;                                        \
-        for (; tmp != NULL; tmp = tmp->next)                 \
-        {                                                    \
-            size++;                                          \
-        }                                                    \
-        return size;                                         \
     }                                                        \
                                                              \
     void queue_free_##T(Queue_##T *q)                        \
