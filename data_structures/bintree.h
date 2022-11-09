@@ -19,6 +19,7 @@ typedef enum bterrors {
  * Allocates space for a new node and assigns a value to it
  *
  * @param val The value stored in the node
+ *
  * @return A newly allocated binary tree node or NULL if it fails
  */
 bt_BinaryTree *bt_new(int val) {
@@ -36,7 +37,8 @@ bt_BinaryTree *bt_new(int val) {
  * Inserts a new node on the right
  *
  * @param bt The node that will be inserted into
- * @val The value of the new node
+ * @param val The value of the new node
+ *
  * @return BT_NODE_EXISTS or BT_SUCCESS
  */
 bterr_t bt_insert_right(bt_BinaryTree *bt, int val) {
@@ -53,7 +55,8 @@ bterr_t bt_insert_right(bt_BinaryTree *bt, int val) {
  * Inserts a new node on the left
  *
  * @param bt The node that will be inserted into
- * @val The value of the new node
+ * @param val The value of the new node
+ *
  * @return BT_NODE_EXISTS or BT_SUCCESS
  */
 bterr_t bt_insert_left(bt_BinaryTree *bt, int val) {
@@ -71,6 +74,7 @@ bterr_t bt_insert_left(bt_BinaryTree *bt, int val) {
  *
  * @param bt The node that will be printed
  * @param depth The node's depth in the tree
+ *
  * @return BT_NODE_DOES_NOT_EXIST or BT_SUCCESS
  */
 bterr_t bt_print_node(bt_BinaryTree *bt, int depth) {
@@ -88,6 +92,7 @@ bterr_t bt_print_node(bt_BinaryTree *bt, int depth) {
  * Removes a node and all of it's children
  *
  * @param bt The node that will be removed
+ *
  * @return BT_NODE_DOES_NOT_EXIST or BT_SUCCESS
  */
 bterr_t bt_remove_node(bt_BinaryTree *bt) {
@@ -104,6 +109,7 @@ bterr_t bt_remove_node(bt_BinaryTree *bt) {
  * Total size of the binary tree
  *
  * @param bt Binary tree's root node
+ *
  * @return Number of nodes in the binary tree
  */
 size_t bt_sizeof(bt_BinaryTree *bt) {
@@ -118,6 +124,7 @@ size_t bt_sizeof(bt_BinaryTree *bt) {
  *
  * @param bt Binary tree's root
  * @param val Value that's being searched for
+ *
  * @return The node containing the searched value
  */
 bt_BinaryTree *bt_find(bt_BinaryTree *bt, int val) {
