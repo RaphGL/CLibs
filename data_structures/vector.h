@@ -1,8 +1,8 @@
 #ifndef VECTOR_H
 #define VECTOR_H
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 typedef struct {
   // The vector itself
@@ -126,17 +126,17 @@ int vec_remove(vec_Vector *vec, size_t index) {
  * @return NULL if index is invalid
  */
 vec_Vector *vec_insert(vec_Vector *vec, size_t index, int val) {
-    if (index > vec->size) {
-        return NULL;
-    }
+  if (index > vec->size) {
+    return NULL;
+  }
 
-    vec_push(vec, val);
-    for (size_t i = vec->size; i > index; i--) {
-        vec->vec[i] = vec->vec[i - 1]; 
-    }
-    vec->vec[index] = val;
+  vec_push(vec, val);
+  for (size_t i = vec->size; i > index; i--) {
+    vec->vec[i] = vec->vec[i - 1];
+  }
+  vec->vec[index] = val;
 
-    return vec;
+  return vec;
 }
 
 /*
@@ -146,9 +146,7 @@ vec_Vector *vec_insert(vec_Vector *vec, size_t index, int val) {
  *
  * @return Capacity of the vector
  */
-int vec_capacity(vec_Vector *vec) {
-    return vec->capacity;
-}
+int vec_capacity(vec_Vector *vec) { return vec->capacity; }
 
 /*
  * Amount of elements in the vector
@@ -157,9 +155,7 @@ int vec_capacity(vec_Vector *vec) {
  *
  * @return Size of the vector
  */
-int vec_size(vec_Vector *vec) {
-    return vec->size;
-}
+int vec_size(vec_Vector *vec) { return vec->size; }
 
 /*
  * Return an element from vector at index
@@ -168,11 +164,11 @@ int vec_size(vec_Vector *vec) {
  * @param index Index of an element in vector
  */
 int vec_get(vec_Vector *vec, size_t index) {
-    if (index > vec->size) {
-        return -1;
-    }
+  if (index > vec->size) {
+    return -1;
+  }
 
-    return vec->vec[index];
+  return vec->vec[index];
 }
 
 /*
@@ -183,10 +179,10 @@ int vec_get(vec_Vector *vec, size_t index) {
  * @return True if vector is empty
  */
 bool vec_is_empty(vec_Vector *vec) {
-    if (vec->size == 0) {
-        return true;
-    } else {
-        return false;
-    }
+  if (vec->size == 0) {
+    return true;
+  } else {
+    return false;
+  }
 }
 #endif
