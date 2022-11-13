@@ -66,7 +66,7 @@ vec_Vector *vec_push(vec_Vector *vec, int val) {
  * @return Popped value
  */
 int vec_pop(vec_Vector *vec) {
-  int val = vec->vec[vec->size];
+  int val = vec->vec[--vec->size];
   vec->size--;
   return val;
 }
