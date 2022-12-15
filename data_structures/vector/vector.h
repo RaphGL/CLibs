@@ -1,9 +1,12 @@
+#ifndef VECTOR_H
+#define VECTOR_H
 #include <stddef.h>
+#include <stdbool.h>
 
 typedef struct vec_vector vec_Vector;
 
 // Initializes a new vector
-vec_Vector vec_new(void);
+vec_Vector *vec_new(void);
 // Pushes a value to vector
 bool vec_push(vec_Vector *restrict vec, void *item);
 // Removes an item from the end of the vector and assigns it to dest
@@ -16,3 +19,5 @@ size_t vec_capacity(const vec_Vector *vec);
 void vec_free(vec_Vector *restrict vec);
 // Returns item at index
 void *vec_get(const vec_Vector *vec, const size_t index);
+
+#endif

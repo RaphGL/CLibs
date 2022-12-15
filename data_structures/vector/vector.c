@@ -11,9 +11,13 @@ typedef struct vec_vector
 } vec_Vector;
 
 // Initializes a new vector
-vec_Vector vec_new(void)
+vec_Vector *vec_new(void)
 {
-  return (vec_Vector){.capacity = 0, .len = 0, .vec = NULL};
+  vec_Vector *new = malloc(sizeof(vec_Vector));
+  new->capacity = 0;
+  new->len = 0;
+  new->vec = NULL;
+  return new;
 }
 
 // Pushes a value to vector
@@ -77,14 +81,13 @@ void vec_free(vec_Vector *restrict vec)
   }
 
   free(vec->vec);
-  vec->capacity = 0;
-  vec->len = 0;
+  free(vec);
 }
 
 // Returns item at index
 void *vec_get(const vec_Vector *vec, const size_t index)
 {
-  if (!vec->vec || index >= vec->len  || index < 0 || vec->capacity == 0)
+  if (!vec->vec || index >= vec->len || vec->capacity == 0)
   {
     return NULL;
   }
