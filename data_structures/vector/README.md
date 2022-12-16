@@ -1,20 +1,20 @@
 # Usage
-Create a vector with:
+Create vector
 ```c
 vec_Vector *vector = vec_new();
 ```
 
-Deleting vector:
+Delete Vector
 ```c
 vec_free(vector);
 ```
 
-To push items:
+Push items
 ```c
 vec_push(vector, (int *)1);
 ```
 
-To pop items:
+Pop items
 ```c
 int item = *(int *)vec_pop(vector);
 ```
@@ -22,4 +22,34 @@ int item = *(int *)vec_pop(vector);
 Get item at index:
 ```c
 int item = *(int *)vec_get(vector, index);
+```
+
+Remove item at index
+```c
+vec_remove(vector, index);
+```
+
+Append a vector to another
+```c
+vec_append(destvec, srcvec);
+```
+
+Print vector
+```c
+vec_printf("%d", vector);
+```
+
+Get length
+```c
+vec_len(vector);
+```
+
+Get capacity (memory allocated)
+```c
+vec_capacity(vector);
+```
+
+Check if vector is empty
+```c
+vec_is_empty(vector);
 ```
