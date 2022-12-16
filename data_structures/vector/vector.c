@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct vec_vector
 {
@@ -18,6 +19,24 @@ vec_Vector *vec_new(void)
   new->len = 0;
   new->vec = NULL;
   return new;
+}
+
+// Resizes vector to fit length
+bool vec_fit(vec_Vector *vec)
+{
+  const size_t power = ceilf(log2f(vec->len + 1));
+  const size_t new_capacity = sizeof(void *) * powf(2, power);
+  if (new_capacity < vec->capacity || new_capacity > vec->capacity)
+  {
+    void *tmp = realloc(vec->vec, new_capacity);
+    if (!tmp)
+    {
+      return false;
+    }
+    vec->vec = tmp;
+    vec->capacity = new_capacity;
+  }
+  return true;
 }
 
 // Pushes a value to vector
@@ -37,22 +56,18 @@ bool vec_push(vec_Vector *restrict vec, void *item)
     return true;
   }
 
-  // grow vector if needed
-  if (vec->len * sizeof(void *) + sizeof(void *) > vec->capacity)
-  {
-    void *tmp = realloc(vec->vec, vec->capacity * 2);
-    if (!tmp)
-    {
-      return false;
-    }
-    vec->vec = tmp;
-    vec->capacity *= 2;
-  }
+  vec_fit(vec);
 
   vec->vec[vec->len] = item;
   vec->len++;
   return true;
 }
+
+// Returns how many items are in the vector
+size_t vec_len(const vec_Vector *vec) { return vec->len; }
+
+// Returns the total amount of items that can currently be stored
+size_t vec_capacity(const vec_Vector *vec) { return vec->capacity; }
 
 // Removes an item from the end of the vector and assigns it to dest
 void *vec_pop(vec_Vector *restrict vec)
@@ -63,14 +78,9 @@ void *vec_pop(vec_Vector *restrict vec)
   }
 
   vec->len--;
+  vec_fit(vec);
   return &vec->vec[vec->len];
 }
-
-// Returns how many items are in the vector
-size_t vec_len(const vec_Vector *vec) { return vec->len; }
-
-// Returns the total amount of items that can currently be stored
-size_t vec_capacity(const vec_Vector *vec) { return vec->capacity; }
 
 // Clears out all the memory used by the vector
 void vec_free(vec_Vector *restrict vec)

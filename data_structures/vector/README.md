@@ -1,4 +1,15 @@
-# Usage
+# Vector
+Rust inspired vector for C.
+It tries to minimize memory foot print by allocating memory in chunks and growing or shrinking depending on how many elements it has.
+
+## Usage
+---
+To use this vector you will have to link the math library:
+```sh
+$ CC -lm vector.o your_program.o
+```
+---
+
 Create vector
 ```c
 vec_Vector *vector = vec_new();
