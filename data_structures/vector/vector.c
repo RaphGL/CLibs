@@ -94,3 +94,78 @@ void *vec_get(const vec_Vector *vec, const size_t index)
 
   return &vec->vec[index];
 }
+
+// Prints the vector with the specified format specifier
+void vec_printf(const char *restrict fmt, const vec_Vector *vec)
+{
+  printf("[");
+  for (size_t i = 0; i < vec_len(vec); i++)
+  {
+    printf(" ");
+    printf(fmt, vec->vec[i]);
+  }
+  printf(" ]\n");
+}
+
+// Inserts a new item at index
+bool vec_insert(vec_Vector *vec, const size_t index, void *item)
+{
+  size_t len = vec->len - 1; // length before growing
+  if (index > len)
+  {
+    return false;
+  }
+
+  vec_push(vec, vec->vec[len]);
+  for (size_t i = vec->len; i > index; i--)
+  {
+    vec->vec[i] = vec->vec[i - 1];
+  }
+
+  vec->vec[index] = item;
+  return true;
+}
+
+// Removes an item at index
+bool vec_remove(vec_Vector *restrict vec, const size_t index)
+{
+  size_t len = vec->len - 1;
+  if (index > len)
+  {
+    return false;
+  }
+
+  for (size_t i = index; i < vec->len; i++)
+  {
+    if (i + 1 < vec->len)
+    {
+
+      vec->vec[i] = vec->vec[i + 1];
+    }
+  }
+  vec_pop(vec);
+
+  return true;
+}
+
+bool vec_is_empty(const vec_Vector *vec)
+{
+  if (vec->len == 0 || vec->capacity == 0 || !vec->vec)
+  {
+    return true;
+  }
+  return false;
+}
+
+// Appends vector from src to dest
+bool vec_append(vec_Vector *restrict dest, const vec_Vector *src)
+{
+  for (size_t i = 0; i < src->len; i++)
+  {
+    if (!vec_push(dest, src->vec[i]))
+    {
+      return false;
+    }
+  }
+  return true;
+}

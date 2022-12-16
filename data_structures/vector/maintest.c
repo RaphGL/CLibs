@@ -5,7 +5,7 @@
 int main(void)
 {
     vec_Vector *vector = vec_new();
-    assert(vec_len(vector) == 0);
+    assert(vec_is_empty(vector));
 
     vec_push(vector, (int *)1);
     assert(vec_len(vector) == 1 && vec_capacity(vector) == sizeof(void *));
@@ -27,7 +27,25 @@ int main(void)
 
     assert(*(int *)vec_pop(vector) == 8 && vec_len(vector) == 7);
 
+    assert(vec_len(vector) == 7);
+    vec_insert(vector, 3, (int *)22);
+    assert(*(int *)vec_get(vector, 3) == 22);
+    assert(vec_len(vector) == 8);
+
+    vec_remove(vector, 3);
+    assert(*(int *)vec_get(vector, 3) == 4);
+    assert(vec_len(vector) == 7);
+
+    vec_Vector *vector2 = vec_new();
+    vec_push(vector2, (int *)91);
+    vec_push(vector2, (int *)92);
+    vec_push(vector2, (int *)93);
+    int prelen = vec_len(vector2);
+    vec_append(vector2, vector);
+    assert(prelen + vec_len(vector) == vec_len(vector2));
+
     vec_free(vector);
+    vec_free(vector2);
     puts("Test passed.");
     return 0;
 }
