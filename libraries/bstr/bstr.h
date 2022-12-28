@@ -22,7 +22,7 @@ bool bstr_equal(bstr str1, bstr str2);
 bool bstring_equal(bstring str1, bstring str2);
 bool bstr_contains(bstr str1, bstr str2);
 bool bstring_contains(bstr str1, bstr str2);
-void bstring_free(bstring str);
+void bstring_free(bstring *str);
 
 //TODO
 void bstring_append();

@@ -110,7 +110,8 @@ void bstr_tok();
 void bstring_tok();
 
 // frees allocated string from memory
-void bstring_free(bstring str) {
-  str.size = 0;
-  free(str.string);
+void bstring_free(bstring *str) {
+  str->size = 0;
+  free(str->string);
+  str->string = NULL;
 }
