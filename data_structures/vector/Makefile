@@ -7,6 +7,7 @@ LIBS = -lm
 all: vector maintest
 
 test: all
+	@rm -f a.out
 	$(CC) $(DEBUGCFLAGS) $(LIBS) *.o 
 	@./a.out
 

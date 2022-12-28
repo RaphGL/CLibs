@@ -1,7 +1,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
-#include <stddef.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 typedef struct vec_vector vec_Vector;
 
