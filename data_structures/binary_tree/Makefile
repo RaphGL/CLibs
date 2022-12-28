@@ -1,16 +1,15 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -Wpedantic 
 DEBUGCFLAGS = -fsanitize=address -fsanitize=undefined
-LIBS = -lm
 
 .PHONY: all
-all: vector maintest
+all: bintree maintest
 
 test: all
 	$(CC) $(DEBUGCFLAGS) $(LIBS) *.o 
 	@./a.out
 
-vector: vector.c
+bintree: bintree.c
 	$(CC) $(CFLAGS) -O2 -c $^
 
 maintest: maintest.c

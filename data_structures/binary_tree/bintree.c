@@ -1,19 +1,7 @@
-#ifndef BINTREE_H
-#define BINTREE_H
+#include "bintree.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct bintree {
-  int val;
-  struct bintree *left;
-  struct bintree *right;
-} bt_BinaryTree;
-
-typedef enum bterrors {
-  BT_NODE_EXISTS,
-  BT_SUCCESS,
-  BT_NODE_DOES_NOT_EXIST
-} bterr_t;
 
 /*
  * Allocates space for a new node and assigns a value to it
@@ -22,7 +10,7 @@ typedef enum bterrors {
  *
  * @return A newly allocated binary tree node or NULL if it fails
  */
-bt_BinaryTree *bt_new(int val) {
+bt_BinaryTree *bt_new(void *val) {
   bt_BinaryTree *new = malloc(sizeof(bt_BinaryTree));
   if (new == NULL) {
     return NULL;
@@ -33,6 +21,8 @@ bt_BinaryTree *bt_new(int val) {
   return new;
 }
 
+void *bt_getitem(bt_BinaryTree *bt) { return &bt->val; }
+
 /*
  * Inserts a new node on the right
  *
@@ -41,14 +31,14 @@ bt_BinaryTree *bt_new(int val) {
  *
  * @return BT_NODE_EXISTS or BT_SUCCESS
  */
-bterr_t bt_insert_right(bt_BinaryTree *bt, int val) {
+bool bt_insert_right(bt_BinaryTree *bt, void *val) {
   bt_BinaryTree *tmp = bt;
   if (tmp->right == NULL) {
     tmp->right = bt_new(val);
   } else {
-    return BT_NODE_EXISTS;
+    return false;
   }
-  return BT_SUCCESS;
+  return true;
 }
 
 /*
@@ -59,14 +49,14 @@ bterr_t bt_insert_right(bt_BinaryTree *bt, int val) {
  *
  * @return BT_NODE_EXISTS or BT_SUCCESS
  */
-bterr_t bt_insert_left(bt_BinaryTree *bt, int val) {
+bool bt_insert_left(bt_BinaryTree *bt, void *val) {
   bt_BinaryTree *tmp = bt;
   if (tmp->left == NULL) {
     tmp->left = bt_new(val);
   } else {
-    return BT_NODE_EXISTS;
+    return false;
   }
-  return BT_SUCCESS;
+  return true;
 }
 
 /*
@@ -77,15 +67,9 @@ bterr_t bt_insert_left(bt_BinaryTree *bt, int val) {
  *
  * @return BT_NODE_DOES_NOT_EXIST or BT_SUCCESS
  */
-bterr_t bt_print_node(bt_BinaryTree *bt, int depth) {
-  if (bt == NULL) {
-    return BT_NODE_DOES_NOT_EXIST;
-  }
-  for (int i = 0; i <= depth; i++) {
-    printf(" ");
-  }
-  printf("%d\n", bt->val);
-  return BT_SUCCESS;
+
+void bt_print(const bt_BinaryTree *bt, char *fmt) {
+    // TODO
 }
 
 /*
@@ -95,14 +79,15 @@ bterr_t bt_print_node(bt_BinaryTree *bt, int depth) {
  *
  * @return BT_NODE_DOES_NOT_EXIST or BT_SUCCESS
  */
-bterr_t bt_remove_node(bt_BinaryTree *bt) {
+bool bt_remove_node(bt_BinaryTree *bt) {
   if (bt == NULL) {
-    return BT_NODE_DOES_NOT_EXIST;
+    return false;
   }
   bt_remove_node(bt->left);
   bt_remove_node(bt->right);
   free(bt);
-  return BT_SUCCESS;
+  bt = NULL;
+  return true;
 }
 
 /*
@@ -127,8 +112,8 @@ size_t bt_sizeof(bt_BinaryTree *bt) {
  *
  * @return The node containing the searched value
  */
-bt_BinaryTree *bt_find(bt_BinaryTree *bt, int val) {
-  bt_BinaryTree *tmp;
+bt_BinaryTree *bt_find(bt_BinaryTree *bt, void *val) {
+  bt_BinaryTree *tmp = NULL;
 
   if (!bt) {
     tmp = NULL;
@@ -141,4 +126,3 @@ bt_BinaryTree *bt_find(bt_BinaryTree *bt, int val) {
     tmp = bt_find(bt->right, val);
   return tmp;
 }
-#endif
