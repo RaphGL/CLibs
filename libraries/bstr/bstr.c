@@ -59,14 +59,28 @@ bstring bstr_to_bstring(bstr str) { return bstring_new(str.string); }
 bool bstr_equal(bstr str1, bstr str2) { STR_EQUAL }
 bool bstring_equal(bstring str1, bstring str2) { STR_EQUAL }
 
-// appends strings
-// TODO
-void bstring_append();
+// appends str2 to str1
+bool bstring_append(bstring *restrict str1, bstring str2) {
+  size_t newsiz = str1->size + str2.size;
+  void *tmp = realloc(str1->string, sizeof(str1->string) * newsiz);
+  if (!tmp) {
+    return false;
+  }
 
-// copies string from src to dest
-// TODO
-void bstr_copy();
-void bstring_copy();
+  const size_t oldsiz = str1->size;
+  *str1 = (bstring){.size = newsiz, .string = tmp};
+  for (size_t i = oldsiz; i <= newsiz; i++)
+  {
+      str1->string[i] = str2.string[i - oldsiz];
+  }
+
+  return true;
+}
+
+// makes a deep copy of string from src to dest
+bstr bstr_copy(bstr str) { return bstr_new(str.string); }
+
+bstring bstring_copy(bstring str) { return bstring_new(str.string); }
 
 // returns whether a str2 is contained in the str1 string
 #define STR_CONTAINS                                                           \
@@ -102,7 +116,7 @@ void bstring_copy();
   return false;
 
 bool bstr_contains(bstr str1, bstr str2) { STR_CONTAINS }
-bool bstring_contains(bstr str1, bstr str2){STR_CONTAINS}
+bool bstring_contains(bstr str1, bstr str2) { STR_CONTAINS }
 
 // returns string that separated by sep one by one
 // TODO

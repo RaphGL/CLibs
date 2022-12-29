@@ -22,11 +22,12 @@ bool bstr_equal(bstr str1, bstr str2);
 bool bstring_equal(bstring str1, bstring str2);
 bool bstr_contains(bstr str1, bstr str2);
 bool bstring_contains(bstr str1, bstr str2);
+bool bstring_append(bstring *restrict str1, bstring str2);
 void bstring_free(bstring *str);
+bstr bstr_copy(bstr str);
+bstring bstring_copy(bstring str);
 
 //TODO
-void bstring_append();
-void bstr_copy();
 void bstr_tok();
 void bstring_tok();
 
