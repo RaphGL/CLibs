@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main(void) {
+int main(void)
+{
   bstr str = bstr_new("my first test");
   assert(str.size == 13);
 
@@ -29,6 +30,13 @@ int main(void) {
   assert(string.size == 0);
   assert(string.string == NULL);
 
+  bstr to_trim = bstr_new("     remove spaces pwease?    ");
+  bstring trim_this = bstr_to_bstring(to_trim);
+  bstring_trim(&trim_this);
+
+  assert(strcmp(trim_this.string, "remove spaces pwease?") == 0);
+
+  bstring_free(&trim_this);
   puts("Passed all tests.");
   return 0;
 }

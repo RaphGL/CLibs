@@ -4,13 +4,15 @@
 #include <stdbool.h>
 
 // static string
-typedef struct bstr_bstr {
+typedef struct bstr_bstr
+{
   char *string;
   size_t size;
 } bstr;
 
 // allocated string
-typedef struct bstr_bstring {
+typedef struct bstr_bstring
+{
   char *string;
   size_t size;
 } bstring;
@@ -26,8 +28,9 @@ bool bstring_append(bstring *restrict str1, bstring str2);
 void bstring_free(bstring *str);
 bstr bstr_copy(bstr str);
 bstring bstring_copy(bstring str);
+bool bstring_trim(bstring *str);
 
-//TODO
+// TODO
 void bstr_tok();
 void bstring_tok();
 
