@@ -56,29 +56,35 @@ bool bstr_equal(bstr str1, bstr str2)
   STR_EQUAL
 }
 bool bstring_equal(bstring str1, bstring str2) { STR_EQUAL }
+bool bstring_equal_bstr(bstring str1, bstr str2) { STR_EQUAL }
+
+#define STR_APPEND                                                  \
+  size_t newsiz = str1->size + str2.size;                           \
+  void *tmp = realloc(str1->string, sizeof(str1->string) * newsiz); \
+  if (!tmp)                                                         \
+  {                                                                 \
+    return false;                                                   \
+  }                                                                 \
+                                                                    \
+  const size_t oldsiz = str1->size;                                 \
+  *str1 = (bstring){.size = newsiz, .string = tmp};                 \
+  for (size_t i = oldsiz; i <= newsiz; i++)                         \
+  {                                                                 \
+    str1->string[i] = str2.string[i - oldsiz];                      \
+  }                                                                 \
+                                                                    \
+  return true;
 
 // appends str2 to str1
-bool bstring_append(bstring *restrict str1, bstring str2)
-{
-  size_t newsiz = str1->size + str2.size;
-  void *tmp = realloc(str1->string, sizeof(str1->string) * newsiz);
-  if (!tmp)
-  {
-    return false;
-  }
+bool bstring_append(bstring *restrict str1, bstring str2) { STR_APPEND }
 
-  const size_t oldsiz = str1->size;
-  *str1 = (bstring){.size = newsiz, .string = tmp};
-  for (size_t i = oldsiz; i <= newsiz; i++)
-  {
-    str1->string[i] = str2.string[i - oldsiz];
-  }
-
-  return true;
-}
+bool bstring_append_bstr(bstring *restrict str1, bstr str2){STR_APPEND}
 
 // makes a deep copy of string from src to dest
-bstr bstr_copy(bstr str) { return bstr_new(str.string); }
+bstr bstr_copy(bstr str)
+{
+  return bstr_new(str.string);
+}
 
 bstring bstring_copy(bstring str) { return bstring_new(str.string); }
 
@@ -128,7 +134,8 @@ bool bstr_contains(bstr str1, bstr str2)
 {
   STR_CONTAINS
 }
-bool bstring_contains(bstr str1, bstr str2) { STR_CONTAINS }
+bool bstring_contains(bstring str1, bstring str2) { STR_CONTAINS }
+bool bstring_contains_bstr(bstring str1, bstr str2) { STR_CONTAINS }
 
 // returns string that separated by sep one by one
 // TODO

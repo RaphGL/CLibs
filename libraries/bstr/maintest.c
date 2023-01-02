@@ -33,8 +33,10 @@ int main(void)
   bstr to_trim = bstr_new("     remove spaces pwease?    ");
   bstring trim_this = bstr_to_bstring(to_trim);
   bstring_trim(&trim_this);
-
   assert(strcmp(trim_this.string, "remove spaces pwease?") == 0);
+
+  bstring_append_bstr(&trim_this, bstr_new(" appended"));
+  assert(bstring_equal_bstr(trim_this, bstr_new("remove spaces pwease? appended")));
 
   bstring_free(&trim_this);
   puts("Passed all tests.");
