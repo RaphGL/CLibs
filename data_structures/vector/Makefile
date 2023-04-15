@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -Wpedantic 
-DEBUGCFLAGS = -fsanitize=address -fsanitize=undefined
+DEBUGCFLAGS = -fsanitize=address -fsanitize=undefined -g
 LIBS = -lm
 
 .PHONY: all
