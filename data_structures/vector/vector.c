@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +9,7 @@ typedef struct vec_vector {
   size_t capacity;
   size_t len;
   size_t item_size;
-  char *vec;
+  uint8_t *vec;
 } vec_Vector;
 
 // Initializes a new vector with items of sizeof(T)
@@ -89,6 +90,7 @@ bool vec_pop(vec_Vector *restrict vec, void *dest) {
 // Clears out all the memory used by the vector
 void vec_free(vec_Vector *restrict vec) {
   free(vec->vec);
+  vec->vec = NULL;
   free(vec);
 }
 

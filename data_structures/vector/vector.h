@@ -44,6 +44,12 @@ bool vec_is_empty(const vec_Vector *vec);
 bool vec_append(vec_Vector *restrict dest, const vec_Vector *src);
 
 // converts an array into a vector
+//
+// WARNING: this will only work on arrays of type void*
+// if you require sizes bigger than sizeof(void *) you should manually push
+// items into vector
+//
+// This function should be avoided if possible
 vec_Vector *vec_from(void *const array, size_t length, size_t item_size);
 
 #endif
