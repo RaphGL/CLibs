@@ -49,12 +49,11 @@ if (bstr_contains(og_str, bstr_new("is this contained?")))
 Get string size
 
 ```c
-printf("size: %ld", str.size);
+printf("size: %ld", str.len);
 ```
 
 Get underlying C string
 
 ```c
-printf("string: %s", str.string);
+printf("string: %s", str.cstr);
 ```
-

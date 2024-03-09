@@ -1,17 +1,14 @@
 CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -Wpedantic
-DEBUGCFLAGS = -fsanitize=address -fsanitize=undefined
+DEBUGCFLAGS = -g -fsanitize=address -fsanitize=undefined
 
 .PHONY: all
-all: bstr maintest
+all: test bstr
 
-test: all
-	@rm -f a.out
-	$(CC) $(DEBUGCFLAGS) $(LIBS) *.o
+test: bstr.c maintest.c
+	@$(CC) $(DEBUGCFLAGS) *.c
 	@./a.out
 
 bstr: bstr.c
-	$(CC) $(CFLAGS) -O2 -c $^
-
-maintest: maintest.c
-	$(CC) $(CFLAGS) -c $^
+	@$(CC) $(CFLAGS) -O2 -c $^
+	@echo "Library compiled into $(subst .c,.o,$^)"

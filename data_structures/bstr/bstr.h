@@ -1,20 +1,18 @@
 #ifndef BSTR_H
 #define BSTR_H
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 // static string
-typedef struct bstr_bstr
-{
-  char *string;
-  size_t size;
+typedef struct bstr_bstr {
+  char *cstr;
+  size_t len;
 } bstr;
 
 // allocated string
-typedef struct bstr_bstring
-{
-  char *string;
-  size_t size;
+typedef struct bstr_bstring {
+  char *cstr;
+  size_t len;
 } bstring;
 
 bstr bstr_new(char *restrict str);
