@@ -77,6 +77,22 @@ int main(void) {
     bstring_free(&s2);
   }
 
+  {
+    bstr s1 = bstr_new("hello, how are you doing?");
+    size_t idx = 0;
+    assert(bstr_index(&idx, s1, bstr_new("hello")));
+    assert(idx == 0);
+
+    assert(bstr_index(&idx, s1, bstr_new("?")));
+    assert(idx == 24);
+
+    assert(bstr_index(&idx, s1, bstr_new("how are you")));
+    assert(idx == 7);
+
+    assert(bstr_index(&idx, s1, bstr_new("doing")));
+    assert(idx == 19);
+  }
+
   puts("Passed all tests.");
   return 0;
 }

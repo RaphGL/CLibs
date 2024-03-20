@@ -1,3 +1,5 @@
+// TODO: add cap size to bstring to avoid unnecessary allocations
+
 #include "bstr.h"
 #include <ctype.h>
 #include <stdbool.h>
@@ -18,7 +20,7 @@ bstring bstring_new(char *restrict str) {
   size_t strsiz;
   for (strsiz = 1; str[strsiz] != '\0'; strsiz++)
     ;
-  char *newstr = malloc(strsiz * sizeof(newstr) + 1);
+  char *newstr = BSTR_MALLOC(strsiz * sizeof(newstr) + 1);
   for (size_t i = 0; i < strsiz + 1; i++) {
     newstr[i] = str[i];
   }
@@ -33,7 +35,7 @@ bstring bstring_new(char *restrict str) {
 
 void bstring_free(bstring *str) {
   str->len = 0;
-  free(str->cstr);
+  BSTR_FREE(str->cstr);
   str->cstr = NULL;
 }
 
@@ -83,36 +85,27 @@ bstr bstr_copy(bstr str) { return bstr_new(str.cstr); }
 
 bstring bstring_copy(bstring str) { return bstring_new(str.cstr); }
 
-bool bstr_contains(bstr str1, bstr str2) {
-  bool *status = calloc(str2.len - 1, sizeof(str2.cstr));
+bool bstr_contains(bstr str, bstr substr) {
+  size_t matched_len = 0;
 
-  for (size_t i = 0; i < str1.len + str2.len; i++) {
-    for (size_t j = 0; j < str2.len; j++) {
-      if (i + j >= str1.len) {
+  for (size_t i = 0; i < str.len + substr.len; i++) {
+    for (size_t j = 0; j < substr.len; j++) {
+      if (i + j >= str.len) {
         break;
       }
 
-      if (str1.cstr[i + j] == str2.cstr[j]) {
-        status[j] = true;
+      if (str.cstr[i + j] == substr.cstr[j]) {
+        ++matched_len;
       } else {
-        status[j] = false;
+        matched_len = 0;
       }
     }
 
-    bool is_contained = true;
-    for (size_t j = 0; j < str2.len; j++) {
-      if (status[j] == false) {
-        is_contained = false;
-      }
-    }
-
-    if (is_contained) {
-      free(status);
+    if (matched_len == substr.len) {
       return true;
     }
   }
 
-  free(status);
   return false;
 }
 
@@ -148,7 +141,7 @@ bool bstring_trim(bstring *str) {
   }
 
   size_t trimmed_size = str->len - begin_offset - end_offset;
-  char *trimmed = malloc(sizeof(*str->cstr) * trimmed_size + 1);
+  char *trimmed = BSTR_MALLOC(sizeof(*str->cstr) * trimmed_size + 1);
   if (!trimmed) {
     return false;
   }
@@ -157,7 +150,7 @@ bool bstring_trim(bstring *str) {
     trimmed[i] = str->cstr[begin_offset + i];
   }
   trimmed[trimmed_size] = '\0';
-  free(str->cstr);
+  BSTR_FREE(str->cstr);
 
   str->cstr = trimmed;
   str->len = trimmed_size;
@@ -397,3 +390,37 @@ bstring bstring_to_upper(bstring str) {
 
   return str;
 }
+
+bool bstr_index(size_t *idx, bstr str, bstr substr) {
+  size_t match_count = 0;
+  for (size_t i = 0; i + substr.len - 1 < str.len; i++) {
+    for (size_t j = 0; j < substr.len; j++) {
+      if (str.cstr[i + j] == substr.cstr[j]) {
+        ++match_count;
+      } else {
+        match_count = 0;
+        break;
+      }
+    }
+
+    if (match_count == substr.len) {
+      *idx = i;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool bstring_index(size_t *idx, bstring str, bstring substr) {
+  return bstr_index(idx, BSTRING_TO_BSTR(str), BSTRING_TO_BSTR(substr));
+}
+
+bool bstring_index_bstr(size_t *idx, bstring str, bstr substr) {
+  return bstr_index(idx, BSTRING_TO_BSTR(str), substr);
+}
+
+// TODO
+void bstr_replace(bstr str, bstr old, bstr new, size_t times);
+// TODO
+void bstr_replace_all(bstr str, bstr old, bstr new);
