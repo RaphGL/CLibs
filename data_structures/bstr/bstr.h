@@ -47,6 +47,8 @@ bstr bstr_copy(bstr str);
 bstring bstring_copy(bstring str);
 // remove whitespace from beginning and end
 bool bstring_trim(bstring *str);
+bool bstring_trim_left(bstring *str);
+bool bstring_trim_right(bstring *str);
 bool bstr_startswith(bstr str, bstr start_str);
 bool bstring_startswith(bstring str, bstring start_str);
 bool bstring_startswith_bstr(bstring str, bstr start_str);

@@ -41,6 +41,17 @@ int main(void) {
     assert(bstring_equal_bstr(trim_this,
                               bstr_new("remove spaces pwease? appended")));
     bstring_free(&trim_this);
+
+    const bstr expected_str = bstr_new("hello");
+    bstring str1 = bstring_new("  \thello");
+    bstring_trim_left(&str1);
+    assert(bstring_equal_bstr(str1, expected_str));
+    bstring_free(&str1);
+
+    bstring str2 = bstring_new("hello\t\t    ");
+    bstring_trim_right(&str2);
+    assert(bstring_equal_bstr(str2, expected_str));
+    bstring_free(&str2);
   }
 
   {

@@ -117,7 +117,9 @@ bool bstring_contains_bstr(bstring str1, bstr str2) {
   return bstr_contains(BSTRING_TO_BSTR(str1), str2);
 }
 
-bool bstring_trim(bstring *str) {
+// returns index of when alnum begins at the start of a string
+static size_t __bstring_trim_offset_beg(bstring *str) {
+
   size_t begin_offset = 0;
   for (size_t i = 0; i < str->len; i++) {
     if (isalnum(str->cstr[i])) {
@@ -129,6 +131,11 @@ bool bstring_trim(bstring *str) {
     }
   }
 
+  return begin_offset;
+}
+
+// returns index of when alnum begins at the end of a string
+static size_t __bstring_trim_offset_end(bstring *str) {
   size_t end_offset = 0;
   for (size_t i = str->len; i > 0; i--) {
     if (isalnum(str->cstr[i])) {
@@ -140,22 +147,46 @@ bool bstring_trim(bstring *str) {
     }
   }
 
-  size_t trimmed_size = str->len - begin_offset - end_offset;
-  char *trimmed = BSTR_MALLOC(sizeof(*str->cstr) * trimmed_size + 1);
-  if (!trimmed) {
+  return end_offset;
+}
+
+static bool __bstring_trim(bstring *str, size_t trimmed_size,
+                          size_t begin_offset) {
+  char *trimmed_str = BSTR_MALLOC(sizeof(*str->cstr) * trimmed_size + 1);
+  if (!trimmed_str) {
     return false;
   }
 
   for (size_t i = 0; i < trimmed_size; i++) {
-    trimmed[i] = str->cstr[begin_offset + i];
+    trimmed_str[i] = str->cstr[begin_offset + i];
   }
-  trimmed[trimmed_size] = '\0';
+  trimmed_str[trimmed_size] = '\0';
   BSTR_FREE(str->cstr);
 
-  str->cstr = trimmed;
+  str->cstr = trimmed_str;
   str->len = trimmed_size;
   return true;
 }
+
+bool bstring_trim(bstring *str) {
+  size_t begin_offset = __bstring_trim_offset_beg(str);
+  size_t end_offset = __bstring_trim_offset_end(str);
+
+  size_t trimmed_size = str->len - begin_offset - end_offset;
+  return __bstring_trim(str, trimmed_size, begin_offset);
+}
+
+bool bstring_trim_left(bstring *str) {
+  size_t begin_offset = __bstring_trim_offset_beg(str);
+  size_t trimmed_size = str->len - begin_offset;
+  return __bstring_trim(str, trimmed_size, begin_offset);
+}
+
+bool bstring_trim_right(bstring *str) {
+  size_t end_offset = __bstring_trim_offset_end(str);
+  size_t trimmed_size = str->len - end_offset;
+  return __bstring_trim(str, trimmed_size, 0);
+  }
 
 bool bstr_startswith(bstr str, bstr start_str) {
   if (start_str.len > str.len) {
