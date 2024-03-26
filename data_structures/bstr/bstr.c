@@ -151,7 +151,7 @@ static size_t __bstring_trim_offset_end(bstring *str) {
 }
 
 static bool __bstring_trim(bstring *str, size_t trimmed_size,
-                          size_t begin_offset) {
+                           size_t begin_offset) {
   char *trimmed_str = BSTR_MALLOC(sizeof(*str->cstr) * trimmed_size + 1);
   if (!trimmed_str) {
     return false;
@@ -186,7 +186,7 @@ bool bstring_trim_right(bstring *str) {
   size_t end_offset = __bstring_trim_offset_end(str);
   size_t trimmed_size = str->len - end_offset;
   return __bstring_trim(str, trimmed_size, 0);
-  }
+}
 
 bool bstr_startswith(bstr str, bstr start_str) {
   if (start_str.len > str.len) {
@@ -250,86 +250,7 @@ bstring bstring_reverse(bstring str) {
 
 bstring bstring_to_lower(bstring str) {
   for (size_t i = 0; i < str.len; i++) {
-    switch (str.cstr[i]) {
-    case 'A':
-      str.cstr[i] = 'a';
-      break;
-    case 'B':
-      str.cstr[i] = 'b';
-      break;
-    case 'C':
-      str.cstr[i] = 'c';
-      break;
-    case 'D':
-      str.cstr[i] = 'd';
-      break;
-    case 'E':
-      str.cstr[i] = 'e';
-      break;
-    case 'F':
-      str.cstr[i] = 'f';
-      break;
-    case 'G':
-      str.cstr[i] = 'g';
-      break;
-    case 'H':
-      str.cstr[i] = 'h';
-      break;
-    case 'I':
-      str.cstr[i] = 'i';
-      break;
-    case 'J':
-      str.cstr[i] = 'j';
-      break;
-    case 'K':
-      str.cstr[i] = 'k';
-      break;
-    case 'L':
-      str.cstr[i] = 'l';
-      break;
-    case 'M':
-      str.cstr[i] = 'm';
-      break;
-    case 'N':
-      str.cstr[i] = 'n';
-      break;
-    case 'O':
-      str.cstr[i] = 'o';
-      break;
-    case 'P':
-      str.cstr[i] = 'p';
-      break;
-    case 'Q':
-      str.cstr[i] = 'q';
-      break;
-    case 'R':
-      str.cstr[i] = 'r';
-      break;
-    case 'S':
-      str.cstr[i] = 's';
-      break;
-    case 'T':
-      str.cstr[i] = 't';
-      break;
-    case 'U':
-      str.cstr[i] = 'u';
-      break;
-    case 'V':
-      str.cstr[i] = 'v';
-      break;
-    case 'W':
-      str.cstr[i] = 'w';
-      break;
-    case 'X':
-      str.cstr[i] = 'x';
-      break;
-    case 'Y':
-      str.cstr[i] = 'y';
-      break;
-    case 'Z':
-      str.cstr[i] = 'z';
-      break;
-    }
+    str.cstr[i] = tolower(str.cstr[i]);
   }
 
   return str;
@@ -337,86 +258,7 @@ bstring bstring_to_lower(bstring str) {
 
 bstring bstring_to_upper(bstring str) {
   for (size_t i = 0; i < str.len; i++) {
-    switch (str.cstr[i]) {
-    case 'a':
-      str.cstr[i] = 'A';
-      break;
-    case 'b':
-      str.cstr[i] = 'B';
-      break;
-    case 'c':
-      str.cstr[i] = 'C';
-      break;
-    case 'd':
-      str.cstr[i] = 'D';
-      break;
-    case 'e':
-      str.cstr[i] = 'E';
-      break;
-    case 'f':
-      str.cstr[i] = 'F';
-      break;
-    case 'g':
-      str.cstr[i] = 'G';
-      break;
-    case 'h':
-      str.cstr[i] = 'H';
-      break;
-    case 'i':
-      str.cstr[i] = 'I';
-      break;
-    case 'j':
-      str.cstr[i] = 'J';
-      break;
-    case 'k':
-      str.cstr[i] = 'K';
-      break;
-    case 'l':
-      str.cstr[i] = 'L';
-      break;
-    case 'm':
-      str.cstr[i] = 'M';
-      break;
-    case 'n':
-      str.cstr[i] = 'N';
-      break;
-    case 'o':
-      str.cstr[i] = 'O';
-      break;
-    case 'p':
-      str.cstr[i] = 'P';
-      break;
-    case 'q':
-      str.cstr[i] = 'Q';
-      break;
-    case 'r':
-      str.cstr[i] = 'R';
-      break;
-    case 's':
-      str.cstr[i] = 'S';
-      break;
-    case 't':
-      str.cstr[i] = 'T';
-      break;
-    case 'u':
-      str.cstr[i] = 'U';
-      break;
-    case 'v':
-      str.cstr[i] = 'V';
-      break;
-    case 'w':
-      str.cstr[i] = 'W';
-      break;
-    case 'x':
-      str.cstr[i] = 'X';
-      break;
-    case 'y':
-      str.cstr[i] = 'Y';
-      break;
-    case 'z':
-      str.cstr[i] = 'Z';
-      break;
-    }
+    str.cstr[i] = toupper(str.cstr[i]);
   }
 
   return str;
@@ -453,5 +295,136 @@ bool bstring_index_bstr(size_t *idx, bstring str, bstr substr) {
 
 // TODO
 void bstr_replace(bstr str, bstr old, bstr new, size_t times);
+
 // TODO
 void bstr_replace_all(bstr str, bstr old, bstr new);
+
+bool bstr_is_kebabcase(bstr str) {
+  for (size_t i = 0; i < str.len; i++) {
+    const char c = str.cstr[i];
+    if (islower(c) && isalnum(c) || c == '-')
+      continue;
+    else
+      return false;
+  }
+
+  return true;
+}
+
+bool bstring_is_kebabcase(bstring str) {
+  return bstr_is_kebabcase(BSTRING_TO_BSTR(str));
+}
+
+bool bstr_is_upper_kebabcase(bstr str) {
+  for (size_t i = 0; i < str.len; i++) {
+    const char c = str.cstr[i];
+    if (isupper(c) && isalnum(c) || c == '-')
+      continue;
+    else
+      return false;
+  }
+
+  return true;
+}
+
+bool bstring_is_upper_kebabcase(bstring str) {
+  return bstr_is_upper_kebabcase(BSTRING_TO_BSTR(str));
+}
+
+bool bstr_is_snakecase(bstr str) {
+  for (size_t i = 0; i < str.len; i++) {
+    const char c = str.cstr[i];
+    if (islower(c) && isalnum(c) || c == '_')
+      continue;
+    else
+      return false;
+  }
+
+  return true;
+}
+
+bool bstring_is_snakecase(bstring str) {
+  return bstr_is_snakecase(BSTRING_TO_BSTR(str));
+}
+
+bool bstr_is_upper_snakecase(bstr str) {
+  for (size_t i = 0; i < str.len; i++) {
+    const char c = str.cstr[i];
+    if (isupper(c) && isalnum(c) || c == '_')
+      continue;
+    else
+      return false;
+  }
+
+  return true;
+}
+
+bool bstring_is_upper_snakecase(bstring str) {
+  return bstr_is_upper_snakecase(BSTRING_TO_BSTR(str));
+}
+
+bool bstr_is_camelcase(bstr str) {
+  if (str.len == 0)
+    return false;
+  if (isupper(str.cstr[0]))
+    return false;
+
+  for (size_t i = 1; i < str.len; i++) {
+    const char c = str.cstr[i];
+    if (isalnum(c))
+      continue;
+    else
+      return false;
+  }
+
+  return true;
+}
+
+bool bstring_is_camelcase(bstring str) {
+  return bstr_is_camelcase(BSTRING_TO_BSTR(str));
+}
+
+bool bstr_is_pascalcase(bstr str) {
+  if (str.len == 0)
+    return false;
+  if (islower(str.cstr[0]))
+    return false;
+
+  for (size_t i = 1; i < str.len; i++) {
+    const char c = str.cstr[i];
+    if (isalnum(c))
+      continue;
+    else
+      return false;
+  }
+
+  return true;
+}
+
+bool bstring_is_pascalcase(bstring str) {
+  return bstr_is_pascalcase(BSTRING_TO_BSTR(str));
+  }
+
+bool bstr_is_adacase(bstr str) {
+  if (str.len == 0)
+    return false;
+  if (islower(str.cstr[0]))
+    return false;
+
+  for (size_t i = 1; i < str.len; i++) {
+    const char c = str.cstr[i];
+    if (isalnum(c))
+      continue;
+    else if (i + 1 < str.len && c == '_') {
+      if (islower(str.cstr[i + 1]))
+        return false;
+    } else
+      return false;
+  }
+
+  return true;
+}
+
+bool bstring_is_adacase(bstring str) {
+  return bstr_is_adacase(BSTRING_TO_BSTR(str));
+}

@@ -11,7 +11,6 @@
 #define BSTR_FREE free
 #endif
 
-
 // static string
 //
 // immutable string. attempting to modify it will result in a segfault.
@@ -68,4 +67,24 @@ bool bstring_index(size_t *idx, bstring str, bstring substr);
 // return false if substring doesn't exist.
 bool bstring_index_bstr(size_t *idx, bstring str, bstr substr);
 
+bool bstr_is_kebabcase(bstr str);
+bool bstring_is_kebabcase(bstring str);
+
+bool bstr_is_upper_kebabcase(bstr str);
+bool bstring_is_upper_kebabcase(bstring str);
+
+bool bstring_is_snakecase(bstring str);
+bool bstring_is_upper_snakecase(bstring str);
+
+bool bstring_is_camelcase(bstring str);
+bool bstring_is_pascalcase(bstring str);
+
+bool bstring_is_adacase(bstring str);
+bool bstr_is_snakecase(bstr str);
+
+bool bstr_is_upper_snakecase(bstr str);
+bool bstr_is_camelcase(bstr str);
+
+bool bstr_is_pascalcase(bstr str);
+bool bstr_is_adacase(bstr str);
 #endif

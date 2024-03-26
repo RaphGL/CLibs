@@ -104,6 +104,35 @@ int main(void) {
     assert(idx == 19);
   }
 
+  {
+    bstr true_kebab = bstr_new("true-kebab-case-style");
+    bstr fake_kebab = bstr_new("fake-Kebabcase-style");
+    bstr camel = bstr_new("camelCaseStyle");
+    bstr pascal = bstr_new("PascalCaseStyle");
+    bstr ada = bstr_new("Ada_Case_Style");
+    bstr snake = bstr_new("snake_case_style");
+
+    assert(bstr_is_kebabcase(true_kebab));
+    assert(!bstr_is_kebabcase(fake_kebab));
+
+    assert(bstr_is_camelcase(camel));
+    assert(!bstr_is_camelcase(pascal));
+    assert(!bstr_is_camelcase(pascal));
+    assert(!bstr_is_camelcase(snake));
+
+    assert(bstr_is_pascalcase(pascal));
+    assert(!bstr_is_pascalcase(camel));
+    assert(!bstr_is_pascalcase(ada));
+
+    assert(bstr_is_adacase(ada));
+    assert(!bstr_is_adacase(snake));
+    assert(!bstr_is_adacase(camel));
+
+    assert(bstr_is_snakecase(snake));
+    assert(!bstr_is_snakecase(ada));
+    assert(!bstr_is_snakecase(pascal));
+  }
+
   puts("Passed all tests.");
   return 0;
 }
