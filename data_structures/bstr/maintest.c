@@ -133,6 +133,17 @@ int main(void) {
     assert(!bstr_is_snakecase(pascal));
   }
 
+  {
+    bstr t0 = bstr_new("this is great, this has 3 this in it");
+    bstr t1 = bstr_new("should have zero dis with an TH in it");
+    bstr t2 = bstr_new("has two numbers 3 in it :3");
+
+    assert(bstr_count(t0, bstr_new("this")) == 3);
+    assert(bstr_count(t1, bstr_new("this")) == 0);
+    assert(bstr_count(t2, bstr_new("3")) == 2);
+    assert(bstr_count(t2, bstr_new("")) == 0);
+  }
+
   puts("Passed all tests.");
   return 0;
 }

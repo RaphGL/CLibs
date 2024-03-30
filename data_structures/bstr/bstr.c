@@ -8,7 +8,7 @@
 
 bstr bstr_new(char *restrict str) {
   size_t strsiz;
-  for (strsiz = 1; str[strsiz] != '\0'; strsiz++)
+  for (strsiz = 0; str[strsiz] != '\0'; strsiz++)
     ;
   return (bstr){
       .cstr = str,
@@ -293,8 +293,43 @@ bool bstring_index_bstr(size_t *idx, bstring str, bstr substr) {
   return bstr_index(idx, BSTRING_TO_BSTR(str), substr);
 }
 
+size_t bstr_count(bstr str, bstr substr) {
+  if (substr.len == 0) {
+    return 0;
+  }
+
+  if (substr.len == 1) {
+    size_t count = 0;
+    for (size_t i = 0; i < str.len; i++) {
+      if (str.cstr[i] == substr.cstr[0]) {
+        ++count;
+      }
+    }
+
+    return count;
+  }
+
+  size_t count = 0;
+
+  for (size_t i = 0;; i++) {
+    str.cstr += i;
+    str.len -= i;
+    if (!bstr_index(&i, str, substr)) {
+      return count;
+    }
+
+    ++count;
+  }
+
+  return count;
+}
+
+size_t bstring_count(bstring str, bstring substr) {
+  return bstr_count(BSTRING_TO_BSTR(str), BSTRING_TO_BSTR(substr));
+}
+
 // TODO
-void bstr_replace(bstr str, bstr old, bstr new, size_t times);
+bool bstr_replace(bstr str, bstr old, bstr new, size_t times);
 
 // TODO
 void bstr_replace_all(bstr str, bstr old, bstr new);
@@ -403,7 +438,7 @@ bool bstr_is_pascalcase(bstr str) {
 
 bool bstring_is_pascalcase(bstring str) {
   return bstr_is_pascalcase(BSTRING_TO_BSTR(str));
-  }
+}
 
 bool bstr_is_adacase(bstr str) {
   if (str.len == 0)

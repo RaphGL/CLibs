@@ -67,6 +67,11 @@ bool bstring_index(size_t *idx, bstring str, bstring substr);
 // return false if substring doesn't exist.
 bool bstring_index_bstr(size_t *idx, bstring str, bstr substr);
 
+// counts how many times substr occurs in str
+size_t bstr_count(bstr str, bstr substr);
+// counts how many times substr occurs in str
+size_t bstring_count(bstring str, bstring substr);
+
 bool bstr_is_kebabcase(bstr str);
 bool bstring_is_kebabcase(bstring str);
 
