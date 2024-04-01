@@ -1,9 +1,6 @@
-// TODO: add cap size to bstring to avoid unnecessary allocations
-
 #include "bstr.h"
 #include <ctype.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 bstr bstr_new(char *restrict str) {
@@ -20,14 +17,41 @@ bstring bstring_new(char *restrict str) {
   size_t strsiz;
   for (strsiz = 1; str[strsiz] != '\0'; strsiz++)
     ;
-  char *newstr = BSTR_MALLOC(strsiz * sizeof(newstr) + 1);
+  char *newstr = malloc(strsiz * sizeof(newstr) + 1);
   for (size_t i = 0; i < strsiz + 1; i++) {
     newstr[i] = str[i];
   }
   return (bstring){
       .cstr = newstr,
       .len = strsiz,
+      .cap = strsiz,
   };
+}
+
+bstring bstring_with_capacity(size_t capacity) {
+  bstring str = (bstring){
+      .cstr = malloc(capacity),
+      .len = 0,
+      .cap = capacity,
+  };
+
+  str.cstr[0] = '\0';
+  return str;
+}
+
+bool bstring_reserve(bstring *str, size_t capacity) {
+  if (capacity <= str->cap) {
+    return false;
+  }
+
+  char *tmp = realloc(str->cstr, capacity);
+  if (!tmp) {
+    return false;
+  }
+
+  str->cstr = tmp;
+  str->cap = capacity;
+  return true;
 }
 
 #define BSTRING_TO_BSTR(str_struct)                                            \
@@ -35,8 +59,8 @@ bstring bstring_new(char *restrict str) {
 
 void bstring_free(bstring *str) {
   str->len = 0;
-  BSTR_FREE(str->cstr);
-  str->cstr = NULL;
+  free(str->cstr);
+  *str = (bstring){0};
 }
 
 bstring bstr_to_bstring(bstr str) { return bstring_new(str.cstr); }
@@ -54,22 +78,30 @@ bool bstr_equal(bstr str1, bstr str2) {
 
   return true;
 }
+
 bool bstring_equal(bstring str1, bstring str2) {
   return bstr_equal(BSTRING_TO_BSTR(str1), BSTRING_TO_BSTR(str2));
 }
+
 bool bstring_equal_bstr(bstring str1, bstr str2) {
   return bstr_equal(BSTRING_TO_BSTR(str1), str2);
 }
 
 bool bstring_append_bstr(bstring *restrict str1, bstr str2) {
-  size_t newsiz = str1->len + str2.len;
-  void *tmp = realloc(str1->cstr, sizeof(*str1->cstr) * newsiz + 1);
-  if (!tmp) {
-    return false;
+  const size_t oldsiz = str1->len;
+  const size_t newsiz = str1->len + str2.len;
+
+  if (str1->cap < newsiz) {
+    void *tmp = realloc(str1->cstr, sizeof(*str1->cstr) * newsiz + 1);
+    if (!tmp) {
+      return false;
+    }
+
+    str1->cap = newsiz;
+    str1->cstr = tmp;
   }
 
-  const size_t oldsiz = str1->len;
-  *str1 = (bstring){.len = newsiz, .cstr = tmp};
+  str1->len = newsiz;
   for (size_t i = oldsiz; i <= newsiz; i++) {
     str1->cstr[i] = str2.cstr[i - oldsiz];
   }
@@ -152,18 +184,10 @@ static size_t __bstring_trim_offset_end(bstring *str) {
 
 static bool __bstring_trim(bstring *str, size_t trimmed_size,
                            size_t begin_offset) {
-  char *trimmed_str = BSTR_MALLOC(sizeof(*str->cstr) * trimmed_size + 1);
-  if (!trimmed_str) {
-    return false;
-  }
-
   for (size_t i = 0; i < trimmed_size; i++) {
-    trimmed_str[i] = str->cstr[begin_offset + i];
+    str->cstr[i] = str->cstr[begin_offset + i];
   }
-  trimmed_str[trimmed_size] = '\0';
-  BSTR_FREE(str->cstr);
-
-  str->cstr = trimmed_str;
+  str->cstr[trimmed_size] = '\0';
   str->len = trimmed_size;
   return true;
 }
@@ -328,6 +352,10 @@ size_t bstring_count(bstring str, bstring substr) {
   return bstr_count(BSTRING_TO_BSTR(str), BSTRING_TO_BSTR(substr));
 }
 
+size_t bstring_count_bstr(bstring str, bstr substr) {
+  return bstr_count(BSTRING_TO_BSTR(str), substr);
+}
+
 // TODO
 bool bstr_replace(bstr str, bstr old, bstr new, size_t times);
 
@@ -337,7 +365,7 @@ void bstr_replace_all(bstr str, bstr old, bstr new);
 bool bstr_is_kebabcase(bstr str) {
   for (size_t i = 0; i < str.len; i++) {
     const char c = str.cstr[i];
-    if (islower(c) && isalnum(c) || c == '-')
+    if ((islower(c) && isalnum(c)) || c == '-')
       continue;
     else
       return false;
@@ -353,7 +381,7 @@ bool bstring_is_kebabcase(bstring str) {
 bool bstr_is_upper_kebabcase(bstr str) {
   for (size_t i = 0; i < str.len; i++) {
     const char c = str.cstr[i];
-    if (isupper(c) && isalnum(c) || c == '-')
+    if ((isupper(c) && isalnum(c)) || c == '-')
       continue;
     else
       return false;
@@ -369,7 +397,7 @@ bool bstring_is_upper_kebabcase(bstring str) {
 bool bstr_is_snakecase(bstr str) {
   for (size_t i = 0; i < str.len; i++) {
     const char c = str.cstr[i];
-    if (islower(c) && isalnum(c) || c == '_')
+    if ((islower(c) && isalnum(c)) || c == '_')
       continue;
     else
       return false;
@@ -385,7 +413,7 @@ bool bstring_is_snakecase(bstring str) {
 bool bstr_is_upper_snakecase(bstr str) {
   for (size_t i = 0; i < str.len; i++) {
     const char c = str.cstr[i];
-    if (isupper(c) && isalnum(c) || c == '_')
+    if ((isupper(c) && isalnum(c)) || c == '_')
       continue;
     else
       return false;

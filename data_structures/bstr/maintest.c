@@ -32,6 +32,22 @@ int main(void) {
   }
 
   {
+    bstring str = bstring_with_capacity(10);
+    assert(str.cap == 10 && str.len == 0);
+
+    bstring_append_bstr(&str, bstr_new("hello"));
+    assert(str.cap == 10 && str.len == 5);
+    bstring_append_bstr(&str, bstr_new(" world!"));
+    assert(str.cap == 12 && str.len == 12);
+
+    bstring_reserve(&str, 20);
+    assert(str.cap == 20 && str.len == 12 &&
+           bstring_equal_bstr(str, bstr_new("hello world!")));
+
+    bstring_free(&str);
+  }
+
+  {
     bstr to_trim = bstr_new("     remove spaces pwease?    ");
     bstring trim_this = bstr_to_bstring(to_trim);
     bstring_trim(&trim_this);

@@ -2,11 +2,11 @@ CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -Wpedantic
 DEBUGCFLAGS = -g -fsanitize=address -fsanitize=undefined
 
-.PHONY: all
+.PHONY: all test
 all: test bstr
 
 test: bstr.c maintest.c
-	@$(CC) $(DEBUGCFLAGS) *.c
+	@$(CC) $(CFLAGS) $(DEBUGCFLAGS) *.c
 	@./a.out
 
 bstr: bstr.c
