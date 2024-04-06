@@ -57,3 +57,5 @@ Get underlying C string
 ```c
 printf("string: %s", str.cstr);
 ```
+
+For more info on the operations available check `bstr.h` for API and `maintest.c` for usage examples.

@@ -43,7 +43,7 @@ bstring bstring_with_capacity(size_t capacity) {
 }
 
 bool bstring_reserve(bstring *str, size_t capacity) {
-  if (capacity <= str->cap) {
+  if (capacity <= str->len || capacity == str->cap) {
     return false;
   }
 
@@ -124,7 +124,9 @@ bool bstr_contains(bstr str, bstr substr) {
   size_t matched_len = 0;
 
   for (size_t i = 0; i < str.len + substr.len; i++) {
+    // compare whether str[i..i+substr.len] == substr
     for (size_t j = 0; j < substr.len; j++) {
+      // avoid segfaulting
       if (i + j >= str.len) {
         break;
       }
@@ -154,7 +156,6 @@ bool bstring_contains_bstr(bstring str1, bstr str2) {
 
 // returns index of when alnum begins at the start of a string
 static size_t __bstring_trim_offset_beg(bstring *str) {
-
   size_t begin_offset = 0;
   for (size_t i = 0; i < str->len; i++) {
     if (isalnum(str->cstr[i])) {
@@ -187,9 +188,11 @@ static size_t __bstring_trim_offset_end(bstring *str) {
 
 static bool __bstring_trim(bstring *str, size_t trimmed_size,
                            size_t begin_offset) {
+  // shift everything from `begin_offset` to the start of the string
   for (size_t i = 0; i < trimmed_size; i++) {
     str->cstr[i] = str->cstr[begin_offset + i];
   }
+  // discard everything after the `trimmed_size` by termianting with '\0'
   str->cstr[trimmed_size] = '\0';
   str->len = trimmed_size;
   return true;
@@ -304,15 +307,18 @@ bstring bstring_to_upper(bstring *str) {
 bool bstr_index(size_t *idx, bstr str, bstr substr) {
   size_t match_count = 0;
   for (size_t i = 0; i + substr.len - 1 < str.len; i++) {
+    // find when str[i..substr.len] == substr
     for (size_t j = 0; j < substr.len; j++) {
       if (str.cstr[i + j] == substr.cstr[j]) {
         ++match_count;
       } else {
+        // match_count = 0 whenever any of the characters on the substr differ
         match_count = 0;
         break;
       }
     }
 
+    // if the substrings match their length would match
     if (match_count == substr.len) {
       *idx = i;
       return true;
@@ -335,6 +341,8 @@ size_t bstr_count(bstr str, bstr substr) {
     return 0;
   }
 
+  // if substr is a single character, just count how many times that letter
+  // occurs
   if (substr.len == 1) {
     size_t count = 0;
     for (size_t i = 0; i < str.len; i++) {
@@ -349,6 +357,8 @@ size_t bstr_count(bstr str, bstr substr) {
   size_t count = 0;
 
   for (size_t i = 0;; i++) {
+    // increment by `i` every time so bstr_index wouldn't return the same substr
+    // but the next substr that matches
     str.cstr += i;
     str.len -= i;
     if (!bstr_index(&i, str, substr)) {
@@ -388,7 +398,7 @@ bool bstring_replace_bstr(bstring *str, bstr old, bstr new, size_t times) {
   size_t newsiz = str->len + count * (new.len - old.len) + 1;
   bstring_reserve(str, newsiz);
   bstring build_str = bstring_with_capacity(newsiz);
-  void *strbeg = build_str.cstr;
+  char *strbeg = build_str.cstr;
 
   bstr tmp = (bstr){
       .cstr = str->cstr,
