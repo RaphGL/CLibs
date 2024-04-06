@@ -63,8 +63,8 @@ bool bstring_endswith_bstr(bstring str, bstr end_str);
 bstr bstr_reverse(bstr str);
 bstring bstring_reverse(bstring str);
 
-bstring bstring_to_lower(bstring str);
-bstring bstring_to_upper(bstring str);
+bstring bstring_to_lower(bstring *str);
+bstring bstring_to_upper(bstring *str);
 
 // writes the index for the susbtring to idx if the substring exists.
 // return false if substring doesn't exist.
@@ -82,6 +82,11 @@ size_t bstr_count(bstr str, bstr substr);
 size_t bstring_count(bstring str, bstring substr);
 // counts how many times substr occurs in str
 size_t bstring_count_bstr(bstring str, bstr substr);
+
+bool bstring_replace(bstring *str, bstring old, bstring new, size_t times);
+bool bstring_replace_bstr(bstring *str, bstr old, bstr new, size_t times);
+void bstring_replace_all(bstring *str, bstring old, bstring new);
+void bstring_replace_all_bstr(bstring *str, bstr old, bstr new);
 
 bool bstr_is_kebabcase(bstr str);
 bool bstring_is_kebabcase(bstring str);

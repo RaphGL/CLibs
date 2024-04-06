@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 bstr bstr_new(char *restrict str) {
   size_t strsiz;
@@ -35,7 +36,9 @@ bstring bstring_with_capacity(size_t capacity) {
       .cap = capacity,
   };
 
-  str.cstr[0] = '\0';
+  for (size_t i = 0; i < capacity; i++) {
+    str.cstr[i] = '\0';
+  }
   return str;
 }
 
@@ -272,7 +275,7 @@ bstring bstring_reverse(bstring str) {
   return bstr_to_bstring(tmp);
 }
 
-bstring bstring_to_lower(bstring str) {
+bstr bstr_to_lower(bstr str) {
   for (size_t i = 0; i < str.len; i++) {
     str.cstr[i] = tolower(str.cstr[i]);
   }
@@ -280,12 +283,22 @@ bstring bstring_to_lower(bstring str) {
   return str;
 }
 
-bstring bstring_to_upper(bstring str) {
+bstring bstring_to_lower(bstring *str) {
+  str->cstr = bstr_to_lower(BSTRING_TO_BSTR(*str)).cstr;
+  return *str;
+}
+
+bstr bstr_to_upper(bstr str) {
   for (size_t i = 0; i < str.len; i++) {
     str.cstr[i] = toupper(str.cstr[i]);
   }
 
   return str;
+}
+
+bstring bstring_to_upper(bstring *str) {
+  str->cstr = bstr_to_upper(BSTRING_TO_BSTR(*str)).cstr;
+  return *str;
 }
 
 bool bstr_index(size_t *idx, bstr str, bstr substr) {
@@ -356,11 +369,77 @@ size_t bstring_count_bstr(bstring str, bstr substr) {
   return bstr_count(BSTRING_TO_BSTR(str), substr);
 }
 
-// TODO
-bool bstr_replace(bstr str, bstr old, bstr new, size_t times);
+// TODO: fix broken function
+bool bstring_replace_bstr(bstring *str, bstr old, bstr new, size_t times) {
+  if (bstr_equal(old, new) || times == 0) {
+    return false;
+  }
 
-// TODO
-void bstr_replace_all(bstr str, bstr old, bstr new);
+  // finds out how many times the word should be replaced
+  size_t count = times;
+  size_t occurrences = bstr_count(BSTRING_TO_BSTR(*str), old);
+  if (occurrences == 0) {
+    return false;
+  } else if (occurrences < times) {
+    count = occurrences;
+  }
+
+  // reallocate string to fit the new size
+  size_t newsiz = str->len + count * (new.len - old.len) + 1;
+  bstring_reserve(str, newsiz);
+  bstring build_str = bstring_with_capacity(newsiz);
+  void *strbeg = build_str.cstr;
+
+  bstr tmp = (bstr){
+      .cstr = str->cstr,
+      .len = str->len,
+  };
+  size_t start = 0;
+
+  for (size_t i = 0; i < count; i++) {
+    bstr_index(&start, tmp, old);
+
+    // writes all strings before replace old word is reached
+    memcpy(build_str.cstr, tmp.cstr, start);
+    build_str.cstr += start;
+    // replaces old word by new word
+    memcpy(build_str.cstr, new.cstr, new.len);
+    build_str.cstr += new.len;
+    build_str.len += start + new.len;
+
+    tmp.cstr += start + old.len;
+    tmp.len -= start + old.len;
+  }
+
+  if (build_str.len < newsiz) {
+    memcpy(build_str.cstr, tmp.cstr, tmp.len);
+  }
+  build_str.cstr = strbeg;
+  // adds length to count for null character
+  ++build_str.len;
+  // writes the newly built string to the old address to avoid having dangling
+  // pointers if the user is already using the string elsewhere since it's
+  // passed by value
+  memcpy(str->cstr, build_str.cstr, newsiz);
+  str->len = newsiz - 1;
+  bstring_free(&build_str);
+  return true;
+}
+
+bool bstring_replace(bstring *str, bstring old, bstring new, size_t times) {
+  return bstring_replace_bstr(str, BSTRING_TO_BSTR(old), BSTRING_TO_BSTR(new),
+                              times);
+}
+
+void bstring_replace_all_bstr(bstring *str, bstr old, bstr new) {
+  size_t count = bstring_count_bstr(*str, old);
+  bstring_replace_bstr(str, old, new, count);
+}
+
+void bstring_replace_all(bstring *str, bstring old, bstring new) {
+  size_t count = bstring_count(*str, old);
+  bstring_replace(str, old, new, count);
+}
 
 bool bstr_is_kebabcase(bstr str) {
   for (size_t i = 0; i < str.len; i++) {

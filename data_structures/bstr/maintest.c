@@ -97,8 +97,8 @@ int main(void) {
   {
     bstring s1 = bstring_new("HELLO");
     bstring s2 = bstring_new("hello");
-    assert(bstring_equal(bstring_to_lower(s1), s2));
-    assert(bstring_equal_bstr(bstring_to_upper(s2), bstr_new("HELLO")));
+    assert(bstring_equal(bstring_to_lower(&s1), s2));
+    assert(bstring_equal_bstr(bstring_to_upper(&s2), bstr_new("HELLO")));
 
     bstring_free(&s1);
     bstring_free(&s2);
@@ -158,6 +158,31 @@ int main(void) {
     assert(bstr_count(t1, bstr_new("this")) == 0);
     assert(bstr_count(t2, bstr_new("3")) == 2);
     assert(bstr_count(t2, bstr_new("")) == 0);
+  }
+
+  {
+    bstring str0 = bstring_new("if you don't know, you don't know");
+    bstring_replace_all_bstr(&str0, bstr_new("you"), bstr_new("we"));
+    assert(
+        bstring_equal_bstr(str0, bstr_new("if we don't know, we don't know")));
+    assert(str0.len == strlen(str0.cstr));
+
+    bstring str1 = bstring_new("hello john, hello kelly");
+    bstring_replace_all_bstr(&str1, bstr_new("hello"), bstr_new("hey"));
+    assert(bstring_equal_bstr(str1, bstr_new("hey john, hey kelly")));
+    assert(str1.len == strlen(str1.cstr));
+
+    bstring str2 = bstring_new("hello john, hello kelly");
+    bstring_replace_bstr(&str2, bstr_new("hello"), bstr_new("sup"), 1);
+    assert(bstring_equal_bstr(str2, bstr_new("sup john, hello kelly")));
+    bstring_replace_bstr(&str2, bstr_new("hello"), bstr_new("hey"), 1);
+    assert(bstring_equal_bstr(str2, bstr_new("sup john, hey kelly")));
+    bstring_replace_bstr(&str2, bstr_new("kelly"), bstr_new("ashley"), 1);
+    assert(bstring_equal_bstr(str2, bstr_new("sup john, hey ashley")));
+
+    bstring_free(&str0);
+    bstring_free(&str1);
+    bstring_free(&str2);
   }
 
   puts("Passed all tests.");
