@@ -4,7 +4,7 @@
 #include <string.h>
 
 int main(void) {
-  char *argv[] = {"--funnyno", "69420", "-pi", "3.14159265359", "--hello", "world"};
+  char *argv[] = {"--test=77", "--funnyno", "69420", "--is-true", "-pi", "3.14159265359", "--hello:world"};
   int argc = sizeof(argv) / sizeof(argv[0]);
 
   flag_Parser p = flag_new(argc, argv);
@@ -12,7 +12,9 @@ int main(void) {
   long *funny_num = flag_long(&p, "funnyno", 0, "the funny number");
   char **hello = flag_str(&p, "hello", "test", "says hello");
   double *pi = flag_double(&p, "pi", 0, "the number for pi");
-  assert(flag_nflags(&p) == 3);
+  long *test = flag_long(&p, "test", 99, "get number 99 or something else");
+  bool *is_true = flag_bool(&p, "is-true", false, "returns true when used");
+  assert(flag_nflags(&p) == 5);
 
   assert(flag_parsed(&p) == false);
   flag_parse(&p);
@@ -21,6 +23,8 @@ int main(void) {
   assert(*funny_num == 69420);
   assert(strcmp(*hello, "world") == 0);
   assert(*pi == 3.14159265359);
+  assert(*test == 77);
+  assert(*is_true);
 
   flag_free(&p);
   puts("test passed.");
