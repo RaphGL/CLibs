@@ -3,12 +3,15 @@ CFLAGS = -std=c11 -Wall -Wextra -Wpedantic
 DEBUGCFLAGS = -fsanitize=address,leak,undefined -g
 LIBS = -lm
 
-.PHONY: all
+.PHONY: all clean
 all: flag maintest
 
-test: all
+clean:
+	rm *.o
+
+test: maintest.c flag.c ../vec/vector.c ../bstr/bstr.c
 	@rm -f a.out
-	$(CC) $(DEBUGCFLAGS) $(LIBS) *.o 
+	$(CC) $(DEBUGCFLAGS) $(LIBS) $^ 
 	@./a.out
 
 flag: flag.c ../vec/vector.c ../bstr/bstr.c

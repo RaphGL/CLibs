@@ -1,18 +1,28 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+// todo: create doc comments
+
 typedef struct flag_parser {
   int argc;
   char **argv;
   bool parsed;
   struct vec_vector *flags;
+  struct vec_vector *remaining;
 } flag_Parser;
 
 flag_Parser flag_new(int argc, char *argv[]);
 void flag_free(flag_Parser *p);
-size_t flag_nflags(flag_Parser *p);
+
 void flag_parse(flag_Parser *p);
 bool flag_parsed(flag_Parser *p);
+size_t flag_nflags(flag_Parser *p);
+void flag_print_flags(flag_Parser *p);
+
+
+size_t flag_nargs(flag_Parser *p);
+char *flag_arg(flag_Parser *p, size_t idx);
+
 
 long *flag_long(flag_Parser *p, char *name, long default_val, char *usage);
 float *flag_float(flag_Parser *p, char *name, float default_val, char *usage);

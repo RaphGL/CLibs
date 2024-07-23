@@ -6,9 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// todo: parser --flag=value
-// todo: find way to retrieve remaining args outside of flags
-
 struct flag_flag {
   bstr name;
   bstr usage;
@@ -41,6 +38,7 @@ flag_Parser flag_new(int argc, char *argv[]) {
       .argc = argc,
       .argv = argv,
       .flags = vec_new(sizeof(struct flag_flag *)),
+      .remaining = vec_new(sizeof(char *)),
       .parsed = false,
   };
 }
@@ -53,6 +51,18 @@ void flag_free(flag_Parser *p) {
   }
 
   vec_free(p->flags);
+  vec_free(p->remaining);
+}
+
+size_t flag_nargs(flag_Parser *p) { return vec_len(p->remaining); }
+
+char *flag_arg(flag_Parser *p, size_t idx) {
+  char *arg;
+  if (!vec_get(p->remaining, idx, &arg)) {
+    return NULL;
+  }
+
+  return arg;
 }
 
 #define CREATE_FLAG(T, flag_type)                                              \
@@ -90,6 +100,42 @@ CREATE_FLAG(ulong, FLAG_ULONG)
 typedef unsigned long long ulonglong;
 CREATE_FLAG(ulonglong, FLAG_ULONGLONG)
 
+void flag_print_flags(flag_Parser *p) {
+  for (size_t i = 0; i < vec_len(p->flags); i++) {
+    struct flag_flag *curr_flag;
+    vec_get(p->flags, i, &curr_flag);
+    printf("--%s\n\t%s", curr_flag->name.cstr, curr_flag->usage.cstr);
+    printf(" (default: ");
+    switch (curr_flag->type) {
+    case FLAG_BOOL:
+      printf(curr_flag->bool_flag ? "true" : "false");
+      break;
+    case FLAG_DOUBLE:
+      printf("%lf", curr_flag->double_flag);
+      break;
+    case FLAG_FLOAT:
+      printf("%f", curr_flag->float_flag);
+      break;
+    case FLAG_LONG:
+      printf("%ld", curr_flag->long_flag);
+      break;
+    case FLAG_LONGLONG:
+      printf("%lld", curr_flag->longlong_flag);
+      break;
+    case FLAG_ULONGLONG:
+      printf("%llu", curr_flag->ulonglong_flag);
+      break;
+    case FLAG_STR:
+      printf("%s", curr_flag->str_flag);
+      break;
+    case FLAG_ULONG:
+      printf("%lu", curr_flag->ulong_flag);
+      break;
+    }
+    puts(")");
+  }
+}
+
 size_t flag_nflags(flag_Parser *p) { return vec_len(p->flags); }
 
 static bool arg_is_flag(bstr *arg) {
@@ -116,6 +162,7 @@ void flag_parse(flag_Parser *p) {
     bstr arg = bstr_new(p->argv[curr_arg_idx]);
 
     if (!arg_is_flag(&arg)) {
+      vec_push(p->remaining, &arg.cstr);
       continue;
     }
 
@@ -134,61 +181,67 @@ void flag_parse(flag_Parser *p) {
     struct flag_flag *curr_flag = NULL;
     for (size_t j = 0; j < vec_len(p->flags); j++) {
       vec_get(p->flags, j, &curr_flag);
-
-      if (bstr_equal(flag_name, curr_flag->name)) {
-        char *flag_val = NULL;
-
-        if (flag_value.len == 0 && curr_flag->type != FLAG_BOOL) {
-          if (++curr_arg_idx >= p->argc) {
-            break;
-          }
-
-          flag_val = p->argv[curr_arg_idx];
-        } else {
-          flag_val = flag_value.cstr;
-        }
-
-        switch (curr_flag->type) {
-        case FLAG_BOOL:
-          if (flag_value.len == 0) {
-            curr_flag->bool_flag = !curr_flag->bool_flag;
-          } else if (bstr_equal(flag_value, bstr_new("true"))) {
-            curr_flag->bool_flag = true;
-          } else if (bstr_equal(flag_value, bstr_new("false"))) {
-            curr_flag->bool_flag = false;
-          }
-          break;
-
-        case FLAG_STR:
-          curr_flag->str_flag = flag_val;
-          break;
-
-        case FLAG_LONG:
-          curr_flag->long_flag = strtol(flag_val, NULL, 10);
-          break;
-
-        case FLAG_ULONG:
-          curr_flag->ulong_flag = strtoul(flag_val, NULL, 10);
-          break;
-
-        case FLAG_LONGLONG:
-          curr_flag->longlong_flag = strtoll(flag_val, NULL, 10);
-          break;
-
-        case FLAG_ULONGLONG:
-          curr_flag->ulonglong_flag = strtoull(flag_val, NULL, 10);
-          break;
-
-        case FLAG_DOUBLE:
-          curr_flag->double_flag = strtod(flag_val, NULL);
-          break;
-
-        case FLAG_FLOAT:
-          curr_flag->float_flag = strtof(flag_val, NULL);
-          break;
-        }
+      if (!bstr_equal(flag_name, curr_flag->name)) {
+        continue;
       }
+
+      char *flag_val = NULL;
+
+      if (flag_value.len == 0 && curr_flag->type != FLAG_BOOL) {
+        if (++curr_arg_idx >= p->argc) {
+          break;
+        }
+
+        flag_val = p->argv[curr_arg_idx];
+      } else {
+        flag_val = flag_value.cstr;
+      }
+
+      switch (curr_flag->type) {
+      case FLAG_BOOL:
+        if (flag_value.len == 0) {
+          curr_flag->bool_flag = !curr_flag->bool_flag;
+        } else if (bstr_equal(flag_value, bstr_new("true"))) {
+          curr_flag->bool_flag = true;
+        } else if (bstr_equal(flag_value, bstr_new("false"))) {
+          curr_flag->bool_flag = false;
+        }
+        break;
+
+      case FLAG_STR:
+        curr_flag->str_flag = flag_val;
+        break;
+
+      case FLAG_LONG:
+        curr_flag->long_flag = strtol(flag_val, NULL, 10);
+        break;
+
+      case FLAG_ULONG:
+        curr_flag->ulong_flag = strtoul(flag_val, NULL, 10);
+        break;
+
+      case FLAG_LONGLONG:
+        curr_flag->longlong_flag = strtoll(flag_val, NULL, 10);
+        break;
+
+      case FLAG_ULONGLONG:
+        curr_flag->ulonglong_flag = strtoull(flag_val, NULL, 10);
+        break;
+
+      case FLAG_DOUBLE:
+        curr_flag->double_flag = strtod(flag_val, NULL);
+        break;
+
+      case FLAG_FLOAT:
+        curr_flag->float_flag = strtof(flag_val, NULL);
+        break;
+      }
+
+      goto next_arg;
     }
+
+  next_arg:
+    continue;
   }
 
   p->parsed = true;
