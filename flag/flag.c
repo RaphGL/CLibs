@@ -237,11 +237,9 @@ void flag_parse(flag_Parser *p) {
         break;
       }
 
-      goto next_arg;
+      // goto to next flag after this flag is parsed
+      break;
     }
-
-  next_arg:
-    continue;
   }
 
   p->parsed = true;

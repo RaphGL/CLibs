@@ -174,7 +174,8 @@ bool vec_append(vec_Vector *restrict dest, const vec_Vector *src) {
   return true;
 }
 
-vec_Vector *vec_from(void *const array, size_t length, size_t item_size) {
+vec_Vector *vec_from(void *const arr, size_t length, size_t item_size) {
+  char *const array = arr;
   vec_Vector *vec = vec_new(item_size);
   for (size_t i = 0; i < length; i++) {
     if (!vec_push(vec, array + i * item_size)) {
