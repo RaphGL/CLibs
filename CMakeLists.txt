@@ -17,9 +17,11 @@ endif()
 
 add_subdirectory(bstr)
 add_subdirectory(vec)
-add_subdirectory(flag)
 
+add_subdirectory(flag)
 target_link_libraries(flag PRIVATE bstr vec)
+
+add_subdirectory(base64)
 
 # --- Executables --- 
 
@@ -32,6 +34,9 @@ target_link_libraries(vec_test vec)
 add_executable(flag_test flag/maintest.c)
 target_link_libraries(flag_test flag)
 
+add_executable(base64_test base64/maintest.c)
+target_link_libraries(base64_test base64)
+
 # --- Testing ---
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -40,4 +45,5 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   add_test(NAME bstr COMMAND bstr_test)
   add_test(NAME vec COMMAND vec_test)
   add_test(NAME flag COMMAND flag_test)
+  add_test(NAME base64 COMMAND base64_test)
 endif()
