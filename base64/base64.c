@@ -36,10 +36,10 @@ static const uint8_t base64_decode_map[] = {
     // `=` -> padding
 };
 
-// todo: fix encoding for strings with length < 3
 const char *const base64_encode(const uint8_t *const data, size_t data_size) {
   const size_t remaining = data_size % 3;
-  const size_t base64_len = ceil(((double)data_size * 8) / 6) + 1;
+  const size_t base64_len =
+      ((double)data_size * 8) / 6 + 4 /* maximum padding + null char */;
   char *result = malloc(base64_len);
   if (!result) {
     return NULL;
