@@ -16,10 +16,9 @@ endif()
 # --- Adding libraries ---
 
 add_subdirectory(bstr)
-add_subdirectory(vec)
 
 add_subdirectory(flag)
-target_link_libraries(flag PRIVATE bstr vec)
+target_link_libraries(flag PRIVATE bstr)
 
 add_subdirectory(base64)
 
@@ -29,10 +28,10 @@ add_executable(bstr_test bstr/maintest.c)
 target_link_libraries(bstr_test bstr)
 
 add_executable(vec_test vec/maintest.c)
-target_link_libraries(vec_test vec)
+target_link_libraries(vec_test m)
 
 add_executable(flag_test flag/maintest.c)
-target_link_libraries(flag_test flag)
+target_link_libraries(flag_test flag m)
 
 add_executable(base64_test base64/maintest.c)
 target_link_libraries(base64_test base64)
