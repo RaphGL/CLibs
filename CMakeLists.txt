@@ -18,7 +18,7 @@ endif()
 add_subdirectory(bstr)
 
 add_subdirectory(flag)
-target_link_libraries(flag PRIVATE bstr)
+target_link_libraries(flag PRIVATE bstr m)
 
 add_subdirectory(base64)
 
@@ -31,7 +31,7 @@ add_executable(vec_test vec/maintest.c)
 target_link_libraries(vec_test m)
 
 add_executable(flag_test flag/maintest.c)
-target_link_libraries(flag_test flag m)
+target_link_libraries(flag_test flag)
 
 add_executable(base64_test base64/maintest.c)
 target_link_libraries(base64_test base64)
