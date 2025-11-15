@@ -23,6 +23,25 @@ typedef struct G(vec_vector) {
    VEC_ITEM_TYPE *vec;
 } G(vec_Vector);
 
+#ifndef VEC_IMPLEMENTATION
+
+G(vec_Vector) * G(vec_new)(void);
+bool G(vec_fit)(G(vec_Vector) *vec);
+bool G(vec_push)(G(vec_Vector) *vec, VEC_ITEM_TYPE item);
+size_t G(vec_len)(const G(vec_Vector) * vec);
+size_t G(vec_capacity)(const G(vec_Vector) * vec);
+bool G(vec_pop)(G(vec_Vector) *vec, VEC_ITEM_TYPE *dest);
+void G(vec_free)(G(vec_Vector) *vec);
+bool G(vec_get)(const G(vec_Vector) * vec, const size_t index, VEC_ITEM_TYPE *dest);
+void G(vec_printf)(const char *fmt, const G(vec_Vector) * vec);
+bool G(vec_insert)(G(vec_Vector) * vec, const size_t index, VEC_ITEM_TYPE item);
+bool G(vec_remove)(G(vec_Vector) *vec, const size_t index, VEC_ITEM_TYPE *dest);
+bool G(vec_is_empty)(const G(vec_Vector) * vec);
+bool G(vec_append)(G(vec_Vector) *dest, const G(vec_Vector) * src);
+G(vec_Vector) * G(vec_from)(VEC_ITEM_TYPE *const arr, size_t length, size_t item_size);
+
+#else
+
 // Initializes a new vector with items of sizeof(T)
 G(vec_Vector) * G(vec_new)(void) {
    G(vec_Vector) *vector = malloc(sizeof(*vector));
@@ -40,7 +59,7 @@ G(vec_Vector) * G(vec_new)(void) {
 }
 
 // Resizes vector to fit length
-bool G(vec_fit)(G(vec_Vector) *restrict vec) {
+bool G(vec_fit)(G(vec_Vector) *vec) {
    const size_t power = ceilf(log2f(vec->len + 1));
    const size_t new_capacity = sizeof(vec->vec[0]) * powf(2, power);
 
@@ -56,23 +75,22 @@ bool G(vec_fit)(G(vec_Vector) *restrict vec) {
 }
 
 // Pushes a value to vector
-bool G(vec_push)(G(vec_Vector) *restrict vec, VEC_ITEM_TYPE item) {
+bool G(vec_push)(G(vec_Vector) *vec, VEC_ITEM_TYPE item) {
    if (vec->len == 0 && vec->capacity == 0) {
       vec->vec = malloc(sizeof(vec->vec[0]));
       if (!vec->vec) {
          return false;
       }
 
+      vec->vec[0] = item;
       vec->len = 1;
       vec->capacity = sizeof(vec->vec[0]);
-
       return true;
    }
 
    G(vec_fit)(vec);
    vec->vec[vec->len] = item;
    vec->len++;
-
    return true;
 }
 
@@ -83,7 +101,7 @@ size_t G(vec_len)(const G(vec_Vector) * vec) { return vec->len; }
 size_t G(vec_capacity)(const G(vec_Vector) * vec) { return vec->capacity; }
 
 // Removes an item from the end of the vector and assigns it to dest
-bool G(vec_pop)(G(vec_Vector) *restrict vec, VEC_ITEM_TYPE *dest) {
+bool G(vec_pop)(G(vec_Vector) *vec, VEC_ITEM_TYPE *dest) {
    if (!vec->vec || vec->len <= 0 || vec->capacity <= 0) {
       return false;
    }
@@ -97,14 +115,14 @@ bool G(vec_pop)(G(vec_Vector) *restrict vec, VEC_ITEM_TYPE *dest) {
 }
 
 // Clears out all the memory used by the vector
-void G(vec_free)(G(vec_Vector) *restrict vec) {
+void G(vec_free)(G(vec_Vector) *vec) {
    free(vec->vec);
    vec->vec = NULL;
    free(vec);
 }
 
 // Returns item at index
-bool G(vec_get)(const G(vec_Vector) * vec, const size_t index, VEC_ITEM_TYPE *restrict dest) {
+bool G(vec_get)(const G(vec_Vector) * vec, const size_t index, VEC_ITEM_TYPE *dest) {
    if (!vec->vec || index >= vec->len || vec->capacity == 0) {
       return false;
    }
@@ -114,7 +132,7 @@ bool G(vec_get)(const G(vec_Vector) * vec, const size_t index, VEC_ITEM_TYPE *re
 }
 
 // Prints the vector with the specified format specifier
-void G(vec_printf)(const char *restrict fmt, const G(vec_Vector) * vec) {
+void G(vec_printf)(const char *fmt, const G(vec_Vector) * vec) {
    // TODO
    printf("[");
    for (size_t i = 0; i < G(vec_len)(vec); i++) {
@@ -142,7 +160,7 @@ bool G(vec_insert)(G(vec_Vector) * vec, const size_t index, VEC_ITEM_TYPE item) 
 }
 
 // Removes an item at index
-bool G(vec_remove)(G(vec_Vector) *restrict vec, const size_t index, VEC_ITEM_TYPE *dest) {
+bool G(vec_remove)(G(vec_Vector) *vec, const size_t index, VEC_ITEM_TYPE *dest) {
    size_t len = vec->len - 1;
    if (index > len) {
       return false;
@@ -170,7 +188,7 @@ bool G(vec_is_empty)(const G(vec_Vector) * vec) {
 }
 
 // Appends vector from src to dest
-bool G(vec_append)(G(vec_Vector) *restrict dest, const G(vec_Vector) * src) {
+bool G(vec_append)(G(vec_Vector) *dest, const G(vec_Vector) * src) {
    for (size_t i = 0; i < src->len; i++) {
       if (!G(vec_push)(dest, src->vec[i])) {
          return false;
@@ -191,5 +209,6 @@ G(vec_Vector) * G(vec_from)(VEC_ITEM_TYPE *const arr, size_t length, size_t item
    return vec;
 }
 
+#endif
 #undef VEC_ITEM_TYPE
 #undef VEC_SUFFIX

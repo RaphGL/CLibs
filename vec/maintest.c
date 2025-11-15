@@ -1,3 +1,4 @@
+#define VEC_IMPLEMENTATION
 #define VEC_ITEM_TYPE int
 #include "vector.h"
 #include <assert.h>
