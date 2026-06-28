@@ -7,12 +7,12 @@
 
 void test_int(void) {
    int arr[] = { 1, 2, 3, 4, 5 };
-   Vector_of_int *int_vec = vec_from_int(arr, sizeof(arr) / sizeof(arr[0]), sizeof(arr[0]));
+   Vector_of_int *int_vec = vec_from_int(VEC_DEFAULT_ALLOCATOR, arr, sizeof(arr) / sizeof(arr[0]), sizeof(arr[0]));
    vec_printf_int("%d", int_vec);
    assert(vec_len_int(int_vec) == 5);
    vec_free_int(int_vec);
 
-   Vector_of_int *vec = vec_new_int();
+   Vector_of_int *vec = vec_new_int(VEC_DEFAULT_ALLOCATOR);
    assert(vec_len_int(vec) == 0);
    assert(vec_capacity_int(vec) == 0);
 
@@ -42,7 +42,7 @@ void test_int(void) {
 
    vec_printf_int("%d", vec);
 
-   Vector_of_int *vec2 = vec_new_int();
+   Vector_of_int *vec2 = vec_new_int(VEC_DEFAULT_ALLOCATOR);
    val = 0;
    vec_push_int(vec2, val);
    val = 1;
@@ -72,7 +72,7 @@ typedef struct {
 
 void test_struct(void) {
 
-   Vector_of_teststruct *vec = vec_new_teststruct();
+   Vector_of_teststruct *vec = vec_new_teststruct(VEC_DEFAULT_ALLOCATOR);
    assert(vec_is_empty_teststruct(vec) == true);
    assert(vec_len_teststruct(vec) == 0);
    assert(vec_capacity_teststruct(vec) == 0);

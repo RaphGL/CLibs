@@ -17,7 +17,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef void *(*VecAllocFunc)(size_t);
+typedef void (*VecFreeFunc)(void *);
+
+typedef struct vec_allocator {
+   VecAllocFunc alloc;
+   VecFreeFunc free;
+} VecAllocator;
+
+#define VEC_DEFAULT_ALLOCATOR ((VecAllocator){ .alloc = malloc, .free = free })
+
 typedef struct G(vector_of) {
+   VecAllocator allocator;
    size_t capacity;
    size_t len;
    VEC_ITEM_TYPE *vec;
@@ -25,7 +36,7 @@ typedef struct G(vector_of) {
 
 #ifndef VEC_IMPLEMENTATION
 
-G(Vector_of) * G(vec_new)(void);
+G(Vector_of) * G(vec_new)(VecAllocator allocator);
 bool G(vec_fit)(G(Vector_of) *vec);
 bool G(vec_push)(G(Vector_of) *vec, VEC_ITEM_TYPE item);
 size_t G(vec_len)(const G(Vector_of) * vec);
@@ -38,13 +49,13 @@ bool G(vec_insert)(G(Vector_of) * vec, const size_t index, VEC_ITEM_TYPE item);
 bool G(vec_remove)(G(Vector_of) *vec, const size_t index, VEC_ITEM_TYPE *dest);
 bool G(vec_is_empty)(const G(Vector_of) * vec);
 bool G(vec_append)(G(Vector_of) *dest, const G(Vector_of) * src);
-G(Vector_of) * G(vec_from)(VEC_ITEM_TYPE *const arr, size_t length, size_t item_size);
+G(Vector_of) * G(vec_from)(VecAllocator allocator, VEC_ITEM_TYPE *const arr, size_t length, size_t item_size);
 
 #else
 
 // Initializes a new vector with items of sizeof(T)
-G(Vector_of) * G(vec_new)(void) {
-   G(Vector_of) *vector = malloc(sizeof(*vector));
+G(Vector_of) * G(vec_new)(VecAllocator allocator) {
+   G(Vector_of) *vector = allocator.alloc(sizeof(*vector));
    if (!vector) {
       return NULL;
    }
@@ -53,6 +64,7 @@ G(Vector_of) * G(vec_new)(void) {
       .capacity = 0,
       .len = 0,
       .vec = NULL,
+      .allocator = allocator,
    };
 
    return vector;
@@ -64,10 +76,12 @@ bool G(vec_fit)(G(Vector_of) *vec) {
    const size_t new_capacity = sizeof(vec->vec[0]) * powf(2, power);
 
    if (new_capacity < vec->capacity || new_capacity > vec->capacity) {
-      void *tmp = realloc(vec->vec, new_capacity);
+      void *tmp = vec->allocator.alloc(new_capacity);
       if (!tmp) {
          return false;
       }
+      memcpy(tmp, vec->vec, vec->len * sizeof(vec->vec[0]));
+      vec->allocator.free(vec->vec);
       vec->vec = tmp;
       vec->capacity = new_capacity;
    }
@@ -77,7 +91,7 @@ bool G(vec_fit)(G(Vector_of) *vec) {
 // Pushes a value to vector
 bool G(vec_push)(G(Vector_of) *vec, VEC_ITEM_TYPE item) {
    if (vec->len == 0 && vec->capacity == 0) {
-      vec->vec = malloc(sizeof(vec->vec[0]));
+      vec->vec = vec->allocator.alloc(sizeof(vec->vec[0]));
       if (!vec->vec) {
          return false;
       }
@@ -116,9 +130,9 @@ bool G(vec_pop)(G(Vector_of) *vec, VEC_ITEM_TYPE *dest) {
 
 // Clears out all the memory used by the vector
 void G(vec_free)(G(Vector_of) *vec) {
-   free(vec->vec);
+   vec->allocator.free(vec->vec);
    vec->vec = NULL;
-   free(vec);
+   vec->allocator.free(vec);
 }
 
 // Returns item at index
@@ -197,8 +211,8 @@ bool G(vec_append)(G(Vector_of) *dest, const G(Vector_of) * src) {
    return true;
 }
 
-G(Vector_of) * G(vec_from)(VEC_ITEM_TYPE *const arr, size_t length, size_t item_size) {
-   G(Vector_of) *vec = G(vec_new)();
+G(Vector_of) * G(vec_from)(VecAllocator allocator, VEC_ITEM_TYPE *const arr, size_t length, size_t item_size) {
+   G(Vector_of) *vec = G(vec_new)(allocator);
    for (size_t i = 0; i < length; i++) {
       if (!G(vec_push)(vec, arr[i])) {
          G(vec_free)(vec);
