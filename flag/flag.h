@@ -1,3 +1,10 @@
+#define VEC_ITEM_TYPE char *
+#define VEC_SUFFIX str
+#include "../vec/vector.h"
+#define VEC_ITEM_TYPE struct flag_flag *
+#define VEC_SUFFIX flag
+#include "../vec/vector.h"
+
 #ifndef FLAG_H
 #define FLAG_H
 
@@ -31,13 +38,6 @@ struct flag_flag {
       double double_flag;
    };
 };
-
-#define VEC_ITEM_TYPE char *
-#define VEC_SUFFIX str
-#include "../vec/vector.h"
-#define VEC_ITEM_TYPE struct flag_flag *
-#define VEC_SUFFIX flag
-#include "../vec/vector.h"
 
 // todo: create doc comments
 

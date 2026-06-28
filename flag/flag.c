@@ -1,9 +1,11 @@
+#include "../bstr/bstr.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../bstr/bstr.h"
 
+#include "flag.h"
+// reincluding so that the vector implementations are instantiated
 #define VEC_IMPLEMENTATION
 #include "flag.h"
 
@@ -53,7 +55,7 @@ char *flag_arg(flag_Parser *p, size_t idx) {
          .type = (flag_type),                                                                      \
       };                                                                                           \
                                                                                                    \
-      if (!vec_push_flag(p->flags, flag)) {                                                       \
+      if (!vec_push_flag(p->flags, flag)) {                                                        \
          free(flag);                                                                               \
          return NULL;                                                                              \
       }                                                                                            \

@@ -1,13 +1,30 @@
-#define VEC_IMPLEMENTATION
-#define VEC_ITEM_TYPE int
-#include "vector.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
+typedef struct {
+   float gravity;
+   int year;
+   char *name;
+} TestStruct;
+
+#define VEC_ITEM_TYPE TestStruct
+#define VEC_SUFFIX teststruct
+#include "vector.h"
+#define VEC_ITEM_TYPE int
+#include "vector.h"
+
+#define VEC_IMPLEMENTATION
+#define VEC_ITEM_TYPE TestStruct
+#define VEC_SUFFIX teststruct
+#include "vector.h"
+#define VEC_ITEM_TYPE int
+#include "vector.h"
+
 void test_int(void) {
    int arr[] = { 1, 2, 3, 4, 5 };
-   Vector_of_int *int_vec = vec_from_int(VEC_DEFAULT_ALLOCATOR, arr, sizeof(arr) / sizeof(arr[0]), sizeof(arr[0]));
+   Vector_of_int *int_vec
+       = vec_from_int(VEC_DEFAULT_ALLOCATOR, arr, sizeof(arr) / sizeof(arr[0]), sizeof(arr[0]));
    vec_printf_int("%d", int_vec);
    assert(vec_len_int(int_vec) == 5);
    vec_free_int(int_vec);
@@ -59,16 +76,6 @@ void test_int(void) {
    vec_free_int(vec);
    puts("Primitive type test passed");
 }
-
-typedef struct {
-   float gravity;
-   int year;
-   char *name;
-} TestStruct;
-
-#define VEC_ITEM_TYPE TestStruct
-#define VEC_SUFFIX teststruct
-#include "vector.h"
 
 void test_struct(void) {
 
