@@ -11,8 +11,8 @@ flag_Parser flag_new(int argc, char *argv[]) {
    return (flag_Parser) {
       .argc = argc,
       .argv = argv,
-      .flags = vec_new_flag(),
-      .remaining = vec_new_str(),
+      .flags = vec_new_flag(VEC_DEFAULT_ALLOCATOR),
+      .remaining = vec_new_str(VEC_DEFAULT_ALLOCATOR),
       .parsed = false,
    };
 }

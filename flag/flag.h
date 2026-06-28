@@ -45,8 +45,8 @@ typedef struct flag_parser {
    int argc;
    char **argv;
    bool parsed;
-   struct vec_vector_flag *flags;
-   struct vec_vector_str *remaining;
+   struct vector_of_flag *flags;
+   struct vector_of_str *remaining;
 } flag_Parser;
 
 // Initializes parser.
